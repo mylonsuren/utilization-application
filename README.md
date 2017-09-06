@@ -22,7 +22,6 @@ $ npm start
 ```
 
 The application will deploy on http://localhost:8080
-
 ---
 
 Technologies Used:
