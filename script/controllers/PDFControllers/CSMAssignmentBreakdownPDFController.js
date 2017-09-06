@@ -108,6 +108,7 @@ CSMApp.controller("CSMAssignmentBreakdownPDFController", function($scope, $http,
 		}
 
 
+
 		// Add CSM column to datatable
 		graph.addColumn('string', 'CSM');
 
@@ -134,6 +135,7 @@ CSMApp.controller("CSMAssignmentBreakdownPDFController", function($scope, $http,
 		var csmsInRegion = 0;
 		for (var i = 0; i < csms.length; i++) {
 			$scope.csmsNames.push(csms[i].csmName);
+			console.log($scope.csmsNames[0]);
 			csmsInRegion++;
 		}
 
@@ -417,7 +419,11 @@ CSMApp.controller("CSMAssignmentBreakdownPDFController", function($scope, $http,
 
 			var csmIndex = getIndexArray($scope.csmsNames, clients[i].csm);
 
+
 			$scope.clientNames[i][csmIndex] += clients[i].clientCapacity;
+
+			console.log(clients[i].clientCapacity)
+			console.log(clients[i].clientName + ' ---- ' + $scope.clientNames[i][csmIndex] + ' ---' + clients[i].csm);
 			// Add Trial Client Series
 			if (clients[i].isTrial === 'trial') {
 				$scope.chartGeoBarChart.addSeries({

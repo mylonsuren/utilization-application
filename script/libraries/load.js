@@ -26,6 +26,9 @@ CSMApp.service('load', function($http, $q) {
 						var date = new Date();
 						date.setDate(date.getDate() + 30);
 
+						var oldDate = new Date();
+						oldDate.setDate(oldDate.getDate() - 30);
+
 						csmList = [{
 							csmName: 'Test Account',
 							id: 54321,
@@ -43,10 +46,10 @@ CSMApp.service('load', function($http, $q) {
 								clientCapacity: 20,
 								percentTimeSpent: 20,
 								clientMarket: 'Canada',
-								clientStart: new Date(),
+								clientStart: oldDate,
 								clientEnd: date,
 								isTrial: 'premsupp',
-								csm: 'CSM One',
+								csm: 'Test Account',
 								role: 'CSM',
 								country: 'Canada',
 							}]
