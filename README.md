@@ -1,4 +1,7 @@
-# Stock Market Simulator
+# Utilization Application
+---
+Sourced from IBM (Summer 2017)
+
 
 ## About
 The purpose of this tool is...
