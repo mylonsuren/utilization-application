@@ -1,5 +1,5 @@
 # Utilization Application
-Created: Summer 2017
+Created Summer 2017
 
 
 ## About
