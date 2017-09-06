@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Overutilized CSMs Report</title>
+
+		<!-- External Styling -->
+		<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+
+    <!-- Internal Styling -->
+  	<link rel="stylesheet" type="text/css" href="/PDFStyles/OverutilizedCSM.css">
+		<link rel="stylesheet" type="text/css" href="/print.css" media="print" />
+
+
+    <!--Dependencies -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+    <script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+
+    <!-- source code -->
+	  <script type="text/javascript" src="/angularConfig.js"></script>
+	  <script type="text/javascript" src="/controllers/navbarController.js"></script>
+
+		<!-- Library -->
+		<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+		<script type="text/javascript" src="/libraries/dates.js"></script>
+		<script type="text/javascript" src="/libraries/query.js"></script>
+		<script type="text/javascript" src="/libraries/load.js"></script>
+
+		<!-- Controller -->
+		<script type="text/javascript" src="/controllers/PDFControllers/OverutilizedCSMsPDFController.js"></script>
+
+		<!-- highcharts -->
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+		<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+
+	</head>
+
+	<body ng-app="CSMApp" ng-controller="OverutilizedCSMsPDFController">
+
+		<!-- Loader -->
+		<div class="ui {{isLoading ? 'active' : ''}} dimmer">
+			<div class="ui text loader">Creating PDF...</div>
+		</div>
+
+		<!-- Print Menu -->
+		<div class="ui vertical mini labeled icon menu" style="position: fixed; top: 90px; ">
+			<a class="item" ng-click="print()">
+				<i class="grey print icon"></i>
+				Print
+			</a>
+		</div>
+
+		<!-- First Page -->
+		<!-- Graph -->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" id="overutilizedCSMGraphCard" style="padding: 60px; margin-left: 200px; margin-right: 100px; margin-top: 90px;" ng-show="overUtilizedCSMS.length > 0">
+					<h1 class="ui header">
+						Overutilized CSMs Report
+						<div class="sub header">A report of all overutilized CSM's for {{getMonthandYear()}}</div>
+					</h1>
+					<div id="overutilzedCSMChart"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Second Page -->
+		<!-- Table -->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" style="padding: 60px; margin-left: 200px; margin-right: 100px;" ng-show="overUtilizedCSMS.length > 0">
+					<h1 class="ui header">
+						Overutilized CSM's Report
+						<div class="sub header">A report of all overutilized CSM's for {{getMonthandYear()}}</div>
+					</h1>
+					<table class="ui five column very compact small celled selectable sortable table">
+						<thead>
+							<tr>
+								<th>CSM</th>
+								<th style="text-align: center;">Utilization</th>
+								<th style="text-align: center;">Work Effort</th>
+								<th style="text-align: center;">Assigned</th>
+								<th style="text-align: center;">Capacity</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="csm in overUtilizedCSMS | orderBy: 'csmName'" ng-click="relocate(csm)">
+								<td>
+									<h4 class="ui image header">
+										<div class="content">
+											{{csm.csmName}}
+											<div class="sub header">{{csm.region}}</div>
+										</div>
+									</h4>
+								</td>
+								<td style="text-align: center;">{{round(csm.utilization, 2)}}%</td>
+								<td style="text-align: center;">{{csm.workEffort}}%</td>
+								<td style="text-align: center;">{{csm.assigned}}%</td>
+								<td style="text-align: center;">{{csm.csmCapacity}}%</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Third Page -->
+		<!-- Individual CSM Tables -->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" style="padding: 60px; margin-left: 200px; margin-right: 100px;" ng-show="overUtilizedCSMS.length > 0">
+					<div ng-repeat="csm in overUtilizedCSMS | orderBy: 'csmName'">
+						<div class="ui two column grid">
+							<div class="ui column">
+								<div class="ui header">
+									{{csm.csmName}}
+									<div class="ui red inverted tiny header" style="display:inline-block; margin-left: 5px; font-weight: bold;">
+										{{round(csm.utilization, 2)}}%
+									</div>
+									<div class="ui tiny sub header" style="margin-top: -10px;">
+										Work Effort: {{csm.workEffort}} / Assigned: {{csm.assigned}} / Capacity: {{csm.csmCapacity}}
+									</div>
+								</div>
+							</div>
+							<div class="ui right aligned column">
+								<div ng-show="[$index] == 0" class="ui small grey header">
+									Overutilized CSMs Report
+								</div>
+							</div>
+						</div>
+						<table class="ui five column small very compact celled selectable table" style="margin-bottom: 40px;">
+							<thead>
+								<tr>
+									<th>Client</th>
+									<th style="text-align: center;">Role</th>
+									<th style="text-align: center;">Type</th>
+									<th style="text-align: center;">Assigned</th>
+									<th style="text-align: center;">Work Effort</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="client in csm.clients | activeClients | orderBy: 'clientName'" ng-class="{negative: {{client.percentTimeSpent > client.clientCapacity}}}" ng-click="redirect(client.accountID)">
+									<td><i class="building outline icon"></i>{{client.clientName}}</td>
+									<td style="text-align: center;">{{client.role.toUpperCase()}}</td>
+									<td style="text-align: center;">{{client.isTrial.toUpperCase()}}</td>
+									<td style="text-align: center;">{{client.clientCapacity}}%</td>
+									<td style="text-align: center;">{{client.percentTimeSpent}}%</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Displays if there are no Overutilized CSMs -->
+		<div class= "ui one cards">
+			<div class="ui raised card" style="padding: 60px; margin-left: 200px; margin-right: 100px; margin-top: 90px; min-height: 500px;" ng-show="overUtilizedCSMS.length <= 0">
+				<h2 class="ui huge icon header" style="margin-top: 75px;">
+					<i class="users icon"></i>
+					No Overutilized CSM's
+				</h2>
+				<p style="text-align: center;">
+					There are currently no overutilized CSM's.
+				</p>
+			</div>
+		</div>
+
+	</body>
+</html>

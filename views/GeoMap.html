@@ -1,0 +1,111 @@
+<head>
+	<title>Map</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- External styling -->
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+
+	<!-- Source styling -->
+	<link rel="stylesheet" type="text/css" href="/PageStyles/Map.css">
+	<link rel="stylesheet" type="text/css" href="/navbar.css">
+
+	<!-- Dependencies -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.28//angular-route.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+
+	<!--Source files -->
+	<script type="text/javascript" src="/angularConfig.js"></script>
+	<script type="text/javascript" src="/controllers/navbarController.js"></script>
+
+	<!-- Controller -->
+	<script type="text/javascript" src="/controllers/pageControllers/GeoMapController.js"></script>
+
+	<!-- Library -->
+	<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+	<script type="text/javascript" src="/libraries/dates.js"></script>
+	<script type="text/javascript" src="/libraries/query.js"></script>
+	<script type="text/javascript" src="/libraries/load.js"></script>
+</head>
+
+
+
+<body ng-app="CSMApp" ng-controller="GeoMapController">
+
+	<application-navbar></application-navbar>
+
+
+	<div ng-show="view == 'Geo'">
+
+		<!-- Assigned Utilization Map -->
+		<div ng-show="!actualUtilization" id="clientGeo_div" class = "fixed">
+			<div class="ui {{isLoading ? 'active' : ''}} inverted dimmer">
+				<div class="ui text loader">Generating Map...</div>
+			</div>
+		</div>
+
+		<!-- Actual Utilization Map -->
+		<div ng-show="actualUtilization" id="actualGeo_div" class="fixed"></div>
+
+		<!-- Stats -->
+		<div class="ui two column grid" style="z-index: 4000; position: absolute; bottom: 8%; left: 30px; width: 25%;">
+			<div ng-click="actualUtilization = !actualUtilization" id="statsHeader" class="ui centered two column row" data-content="Click to view {{!actualUtilization ? 'Actual Utilization':'Assigned Utilization'}}." data-position="top center">
+				<a class="ui {{!actualUtilization ? 'inverted olive':'inverted blue'}} {{checkHeaderSize()}} header">
+					<div class="content">
+						{{!actualUtilization ? 'Assigned':'Actual'}}
+						<div class="sub header">Utilization</div>
+					</div>
+				</a>
+			</div>
+			<div class="ui two column row">
+				<div class="ui center aligned column">
+					<div class="ui one {{checkStatSize()}} statistics">
+						<a class="ui {{checkStatColor(naUtil, naActualUtil)}} statistic" href="/Geo/North-America">
+							<div class="value">
+								{{!actualUtilization ? naUtil:naActualUtil}}%
+							</div>
+							<div id="geoStatsLabel" class="label">
+								North America
+							</div>
+						</a>
+						<a class="ui {{checkStatColor(laUtil, laActualUtil)}} statistic" href="/Geo/Latin-America">
+							<div class="value">
+								{{!actualUtilization ? laUtil:laActualUtil}}%
+							</div>
+							<div id="geoStatsLabel" class="label">
+								Latin America
+							</div>
+						</a>
+					</div>
+				</div>
+				<div class="ui center aligned column">
+					<div class="ui one {{checkStatSize()}} statistics">
+						<a class="ui {{checkStatColor(emeaUtil, emeaActualUtil)}} statistic" href="/Geo/EMEA">
+							<div class="value">
+								{{!actualUtilization ? emeaUtil:emeaActualUtil}}%
+							</div>
+							<div id="geoStatsLabel" class="label">
+								EMEA
+							</div>
+						</a>
+						<a class="ui {{checkStatColor(apUtil, apActualUtil)}} statistic" href="/Geo/Asia-Pacific">
+							<div class="value">
+								{{!actualUtilization ? apUtil:apActualUtil}}%
+							</div>
+							<div id="geoStatsLabel" class="label">
+								Asia Pacific
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>

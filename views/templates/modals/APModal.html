@@ -1,0 +1,79 @@
+
+<!-- modal to show reports -->
+<div class="ui long modal APReport">
+	<div class="header">Asia-Pacific Report<div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+	<div class="content">
+		<p>A summary of key information regarding CSM and client utilization in the Asia Pacific region</p>
+		<div class="ui {{isLoading ? 'active' : ''}} inverted dimmer">
+			<div class="ui text loader">Fetching Data ...</div>
+		</div>
+		<div class="ui three small statistics" ng-click="toggleUnits()">
+			<div class="{{geoUtil > 100 ? 'red':'green'}} statistic">
+				<div class="value">
+					{{geoUtil}}%
+				</div>
+				<div class="label">
+					Assigned Utilization
+				</div>
+			</div>
+			<div class="{{geoActualUtil > 100 ? 'red':'green'}} statistic">
+				<div class="value">
+					{{geoActualUtil}}%
+				</div>
+				<div class="label">
+					Actual Utilization
+				</div>
+			</div>
+			<div class="statistic">
+				<div class="value">
+					{{units ? library.round((geoCapacity - workEffort)/20, 2) : library.round((geoCapacity - workEffort)/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+				</div>
+				<div class="label">
+					Available Capacity
+				</div>
+			</div>
+		</div>
+		<br />
+		<div class="ui three small statistics" ng-click="toggleUnits()">
+			<div class="statistic">
+				<div class="value">
+					{{units ? library.round(geoCapacity/20, 2) : library.round(geoCapacity/80, 2) }} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+				</div>
+				<div class="label">
+					Total Capacity
+				</div>
+			</div>
+			<div class="statistic">
+				<div class="value">
+					{{units ? library.round(geoAssignments/20, 2) : library.round(geoAssignments/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+				</div>
+				<div class="label">
+					Assigned Subscriptions
+				</div>
+			</div>
+			<div class="statistic">
+				<div class="value">
+					{{units ? library.round(workEffort/20, 2) : library.round(workEffort/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+				</div>
+				<div class="label">
+					Total Work Effort
+				</div>
+			</div>
+		</div>
+		<br />
+		<div class="ui one small statistics" ng-click="toggleUnits()">
+			<div class="statistic">
+				<div class="value">
+					{{overutilizedCSMs.length}}
+				</div>
+				<div class="label">
+					Overutilized CSMs
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div class="actions">
+		<button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+	</div>
+</div>

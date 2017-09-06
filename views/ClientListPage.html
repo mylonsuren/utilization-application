@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Clients</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/www.css"/>
+	<script src = "https://1.www.s81c.com/common/stats/ida_stats.js"></script>
+	<script src = "https://1.www.s81c.com/common/v18/js/www.js"></script>
+
+	<!-- External styling -->
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+
+	<!-- Source styling -->
+	<link rel="stylesheet" type="text/css" href="/PageStyles/ClientListPage.css">
+	<link rel="stylesheet" type="text/css" href="/navbar.css">
+
+
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular-resource.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+
+
+	<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+
+
+	<!-- Source files -->
+	<script type="text/javascript" src="/angularConfig.js"></script>
+	<script type="text/javascript" src="/dependencies/tablesort.js"></script>
+	<script type="text/javascript" src="/controllers/navbarController.js"></script>
+	<script type="text/javascript" src="/controllers/pageControllers/ClientListPageController.js"></script>
+
+	<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+	<script type="text/javascript" src="/libraries/dates.js"></script>
+	<script type="text/javascript" src="/libraries/query.js"></script>
+	<script type="text/javascript" src="/libraries/load.js"></script>
+
+</head>
+
+<body ng-app="CSMApp" ng-controller="ClientListPageController">
+	<application-navbar></application-navbar>
+
+	<!-- PAGE HEADER -->
+	<div ng-init= "layout = 'grid'" class = "ibm-background-gray-80 ibm-textcolor-gray-30" id="parent-container">
+		<div id="ibm-leadspace-head" class="ibm-alternate ibm-fluid ibm-fullwidth bluebackground">
+			<div id="ibm-leadspace-body" class="ibm-padding-top-r2 ibm-padding-bottom-r2 ibm-textcolor-gray-80" ng-cloak>
+				<div class="ibm-columns">
+					<div class="ibm-col-6-4">
+						<h1 class="ibm-h1 ibm-textcolor-white-core" id="ibm-pagetitle-h1">List of Clients</h1>
+						<div class="ibm-pull-quote ibm-padding-top-1 ibm-h3">
+						</div>
+						<br />
+						<p class = "ibm-link">
+							<a class="ibm-btn-pri ibm-btn-gray-80 " ng-click="layout='grid'"><i class="grid layout icon"></i>Grid View</a>
+							<a class="ibm-btn-pri ibm-btn-gray-80 " ng-click="layout='list'"><i class="list layout icon"></i>List View</a>
+						</p>
+						<p class="ibm-ind-link" ng-show="layout=='grid'">
+							<a id = "NorthAmericaButton" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link" ng-init="layout='grid'">North America</a>
+							<a id = "LatinAmericaButton" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link" ng-init="layout='grid'">Latin America</a>
+							<a id = "AsiaPacificButton" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link" ng-init="layout='grid'">Asia-Pacific</a>
+							<a id = "EMEAButton" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link" ng-init="layout='grid'">EMEA</a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- GRID VIEW (list view at the end of file)-->
+		<div class="ibm-fluid" ng-show="layout == 'grid'" ng-cloak>
+			<div id = "NorthAmerica" align = "center">
+				<div class="ui {{isLoading ? 'active' : ''}} dimmer">
+					<div class="ui text loader">Fetching Data ...</div>
+				</div>
+				<h1 class="ibm-h1"><a href="/Geo/North-America">North America</a></h1>
+				<div class ="centered ui link cards" >
+					<div class = "blurring card"  ng-repeat= "client in clients"  ng-click="updateNVal($index)" ng-show= "client.clientRegion == 'North America'" ng-cloak>
+						<div class="ui inverted dimmer">
+							<div class="middle aligned content">
+								<p class="ui white sub header" style="color: white;" >
+									Click for more information
+								</p>
+							</div>
+						</div>
+						<div class="ui inverted custom popup" id="fixed-width">
+							<center class="ui white sub header" style="postition: center;">{{clients[nval].clientName}}</center>
+							<center>
+								<small style="color: #33ccff;">(any trial clients will be in blue font)</small>
+							</center>
+							<br />
+							<div>
+								<small>CSM(s) Currently Involved</small>
+								<div ng-repeat ="csm in removeDuplicateNames(clients[nval].csms)">
+									&emsp; •   {{csm.name}}
+								</div>
+							</div>
+							<br />
+							<small><i>Current Engagements</i></small>
+							<div ng-repeat = "engagement in returnAllEngagements(clients[nval].id, currentWithDuplicates)">
+								<div ng-if = "engagement.isTrial !== 'trial'">
+									&emsp;  {{engagement.clientStart.split('T')[0]}}  -  {{engagement.clientEnd.split('T')[0]}}
+									<small><br />&emsp; &emsp;{{engagement.csm}}&emsp; {{engagement.clientCapacity}}%</small>
+								</div>
+								<div ng-if = "engagement.isTrial === 'trial'" style="color: #33ccff;">
+									&emsp;  {{engagement.clientStart.split('T')[0]}}  -  {{engagement.clientEnd.split('T')[0]}}
+									<small><br />&emsp; &emsp;{{engagement.csm}} &emsp; {{engagement.clientCapacity}}%</small>
+								</div>
+							</div>
+							<small ng-if = "returnAllEngagements(clients[nval].id, pastWithDuplicates).length > 0"><i><br />Past Engagements</i></small>
+							<div ng-repeat = "engagement in returnAllEngagements(clients[nval].id, pastWithDuplicates)">
+								<div ng-if = "engagement.isTrial !== 'trial'">
+									&emsp;  {{engagement.clientStart.split('T')[0]}}  -  {{engagement.clientEnd.split('T')[0]}}
+									<small><br />&emsp; &emsp; {{engagement.csm}}&emsp; {{engagement.clientCapacity}}%</small>
+								</div>
+								<div ng-if = "engagement.isTrial === 'trial'" style="color: #33ccff;">
+									&emsp;  {{engagement.clientStart.split('T')[0]}}  -  {{engagement.clientEnd.split('T')[0]}}
+									<small><br />&emsp; &emsp;{{engagement.csm}}&emsp; {{engagement.clientCapacity}}%</small>
+								</div>
+							</div>
+							<small ng-if = "returnAllEngagements(clients[nval].id, futureWithDuplicates).length > 0"><i><br />Future Engagements</i></small>
+							<div ng-repeat = "engagement in returnAllEngagements(clients[nval].id, futureWithDuplicates)">
+								<div ng-if = "engagement.isTrial !== 'trial'">
+									&emsp;  {{engagement.clientStart.split('T')[0]}}  -  {{engagement.clientEnd.split('T')[0]}}
+									<small><br />&emsp; &emsp; {{engagement.csm}}&emsp; {{engagement.clientCapacity}}%</small>
+								</div>
+								<div ng-if = "engagement.isTrial === 'trial'" style="color: #33ccff;">
+									&emsp;  {{engagement.clientStart.split('T')[0]}}  -  {{engagement.clientEnd.split('T')[0]}}
+									<small><br />&emsp; &emsp;{{engagement.csm}}&emsp; {{engagement.clientCapacity}}%</small>
+								</div>
+							</div>
+							<br />
+							<center>
+								<button class="ui inverted grey basic button" ng-click="redirect(clients[nval].accountID)">View In ETA</button>
+							</center>
+						</div>
+
+						<a class = "content" >
+							<div class = "header">{{client.clientName}}</div>
+							<div class = "meta">
+								<div class="ui grey sub header">{{markets[client.clientMarket]}}</div>
+							</div>
+							<div class = "description">
+								<div>
+									<h5 class ="ibm-h5 ibm-textcolor-blue-50">Percentage Support Purchased: {{client.totalPurchased}}%</h4>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<div id = "LatinAmerica" align = "center">
+					<h1 class="ibm-h1"><a href="/Geo/Latin-America">Latin America</a></h1>
+					<div class ="centered ui link cards" >
+						<div class = "blurring card"  ng-repeat= "client in clients"  ng-click="updateNVal($index)" ng-show= "client.clientRegion == 'Latin America'" ng-cloak>
+							<div class="ui inverted dimmer">
+								<div class="middle aligned content">
+									<p class="ui white sub header" style="color: white;" >
+										Click for more information
+									</p>
+								</div>
+							</div>
+							<a class = "content" >
+								<div class = "header">{{client.clientName}}</div>
+								<div class = "meta">
+									<div class="ui grey sub header">{{markets[client.clientMarket]}}</div>
+								</div>
+								<div class = "description">
+									<div>
+										<h5 class ="ibm-h5 ibm-textcolor-blue-50">Percentage Support Purchased: {{client.totalPurchased}}%</h4>
+										</div>
+									</div>
+								</a>
+							</div>
+
+						</div>
+					</div>
+
+
+					<div id = "EMEA" align = "center">
+						<h1 class="ibm-h1"><a href="/Geo/EMEA">EMEA</a></h1>
+						<div class ="centered ui link cards" >
+							<div class = "blurring card"  ng-repeat= "client in clients"  ng-click="updateNVal($index)" ng-show= "client.clientRegion == 'EMEA'" ng-cloak>
+								<div class="ui inverted dimmer">
+									<div class="middle aligned content">
+										<p class="ui white sub header" style="color: white;" >
+											Click for more information
+										</p>
+									</div>
+								</div>
+								<a class = "content" >
+									<div class = "header">{{client.clientName}}</div>
+									<div class = "meta">
+										<div class="ui grey sub header">{{markets[client.clientMarket]}}</div>
+									</div>
+									<div class = "description">
+										<div>
+											<h5 class ="ibm-h5 ibm-textcolor-blue-50">Percentage Support Purchased: {{client.totalPurchased}}%</h4>
+											</div>
+										</div>
+									</a>
+								</div>
+
+							</div>
+						</div>
+
+						<div id = "Asia-Pacific" align = "center">
+							<h1 class="ibm-h1"><a href="/Geo/Asia-Pacific">Asia-Pacific</a></h1>
+							<div class ="centered ui link cards" >
+								<div class = "blurring card"  ng-repeat= "client in clients"  ng-click="updateNVal($index)" ng-show= "client.clientRegion == 'Asia Pacific'" ng-cloak>
+									<div class="ui inverted dimmer">
+										<div class="middle aligned content">
+											<p class="ui white sub header" style="color: white;" >
+												Click for more information
+											</p>
+										</div>
+									</div>
+									<a class = "content" >
+										<div class = "header">{{client.clientName}}</div>
+										<div class = "meta">
+											<div class="ui grey sub header">{{markets[client.clientMarket]}}</div>
+										</div>
+										<div class = "description">
+											<div>
+												<h5 class ="ibm-h5 ibm-textcolor-blue-50">Percentage Support Purchased: {{client.totalPurchased}}%</h4>
+												</div>
+											</div>
+										</a>
+									</div>
+
+								</div>
+							</div>
+							<br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br />
+						</div>
+
+						<!-- LIST VIEW -->
+						<div align ="center" class = "ibm-background-gray-80 ibm-textcolor-gray-30" ng-show="layout == 'list'" ng-cloak>
+							<table class = "ui sortable selectable inverted table" id = "clientTable">
+								<thead>
+									<tr>
+										<th>Name </th>
+										<th class = "float">Total Premium Support Purchased</th>
+										<th>Region</th>
+										<th>Associated CSMs </th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat = "client in clients" ng-click="redirect(clients[$index].accountID)">
+										<td>{{ client.clientName }}</td>
+										<td>{{ client.totalPurchased }}%</td>
+										<td>{{ client.clientRegion }}</td>
+										<td>{{ client.associatedCSMS }}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</body>
+				</html>

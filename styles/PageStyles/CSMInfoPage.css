@@ -1,0 +1,217 @@
+/*****************
+GENERAL
+******************/
+body {
+	position: relative;
+	overflow: scroll;
+	background:#343334 !important;
+}
+
+a {
+	cursor: pointer;
+}
+
+.bluebackground{
+	background: url("/bluebackground.png") !important;
+}
+
+.top-padding{
+	padding: 20px;
+}
+
+/* Overriding semantic ui styles */
+input {
+	border-radius: 0px !important;
+}
+
+.ui.label {
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+	background-color: #3b6caa !important;
+	color: white !important;
+}
+
+.ui.selection.dropdown .menu {
+	border-radius: 0px !important;
+}
+
+.ui.dropdown .menu>.item:hover {
+	color: white !important;
+	background-color: #3b6caa !important;
+}
+
+.ui.modal.transition.visible.active {
+	border-radius: 0px !important;
+}
+
+.circle {
+	height: 40px;
+	width: 40px;
+	border-radius: 50%;
+	background-color: #fff;
+	cursor: pointer;
+	position: relative;
+	bottom: 7px;
+}
+
+.circle:hover {
+	background-color: #E1DFDF;
+}
+
+i.icon.close:before {
+	position: relative;
+	top: 5px;
+	right: 8px;
+	font-size: 23px;
+}
+
+.ibm-fluid {
+	max-width: 100% !important;
+}
+
+/* Set height of the grid so .sidenav can be 100% (adjust if needed) */
+.row.content {
+	height: 1996px;
+}
+
+
+/*****************
+SUMMARY INFO
+******************/
+
+.summaryContainer {
+	margin-top: 10px;
+}
+
+/*****************
+CURRENT CAPACITY GRAPHS
+******************/
+
+#barGraph {
+	margin-bottom: 200px;
+}
+
+
+/*****************
+UTILIZATION LINE GRAPH
+******************/
+
+.moduleContainer {
+	padding: 20px;
+}
+
+canvas {
+	height: 100% !important;
+}
+
+.clientList {
+	max-height: 700px;
+	overflow-y: scroll;
+}
+
+#dropdownButton {
+	float: right;
+}
+
+#graph-list-toggle {
+	float: left;
+}
+
+#month-quarter-toggle {
+	float: right;
+}
+
+/*****************
+TIMELINE
+******************/
+.vis-timeline {
+  font-size: 9pt;
+  background: #323232;
+	color: white;
+}
+
+.vis-item {
+  border-color: #4178BE;
+  background-color: black;
+  font-size: 10pt;
+  color: lightgrey;
+}
+
+
+.vis-item.vis-selected {
+  border-color: black;
+  background-color: #5AAAFA;
+}
+
+.vis-text.vis-minor{
+	color: white;
+}
+
+.vis-text.vis-major{
+	color:white;
+}
+
+.vis-time-axis .vis-grid.vis-minor {
+  border-width: 2px;
+  border-color: white;
+
+}
+
+.vis-time-axis .vis-grid.vis-major {
+  border-width: 2px;
+  border-color: white;
+}
+
+.moduleContainer.timelineContainer {
+	padding-top: 1px;
+	width: auto;
+}
+
+.required {
+	color: #DB2828;
+}
+
+#visualization {
+	margin-bottom: 15px;
+}
+
+.timelineContainer {
+	height: inherit;
+	width: inherit;
+}
+
+
+.ui.raised.segments.popover {
+	position: fixed !important;
+	top: 50px !important;
+	right: 10px !important;
+	z-index: 99 !important;
+}
+
+#panel {
+	display: none;
+}
+
+#myBtn {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed/sticky position */
+    bottom: 20px; /* Place the button at the bottom of the page */
+    right: 30px; /* Place the button 30px from the right */
+    z-index: 99; /* Make sure it does not overlap */
+}
+
+
+#milestone{
+	margin-left: 100px;
+	margin-right: 100px;
+	padding-bottom: 100px;
+}
+
+#issue-container{
+	padding-top: 30px;
+}
+
+#reporting{
+	padding-bottom: 100px;
+	padding-top: 50px;
+}

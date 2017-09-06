@@ -1,0 +1,248 @@
+
+.vizuly {
+    /*font-family: "Raleway";*/
+    font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+}
+
+.ui.dimmer {
+    background-color: #323232 !important;
+    height: 1200px;
+    margin: 0px !important;
+}
+
+html, body {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+    height: 0%;
+    font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif !important;
+    width: 100%;
+}
+
+
+a {
+    cursor: pointer;
+}
+
+tr {
+    cursor: pointer;
+}
+
+
+#menu-name>a {
+    color: #ececec;
+}
+
+
+#geoStats:hover #statLabel {
+    cursor: pointer;
+    color: rgba(84, 153, 199, 1);
+    font-weight: bold;
+    font-size: 0.8em;
+}
+
+#div1 {
+    position: relative;
+}
+
+#div5 {
+    z-index: 1000;
+    position: absolute;
+    margin-top: -67.5%;
+}
+
+#div4 {
+    position: relative;
+}
+
+#div8 {
+    z-index: 1000;
+    position: absolute;
+    margin-top: -67.5%;
+}
+
+#div2 {
+    position: relative;
+}
+
+#div6 {
+    z-index: 1000;
+    position: absolute;
+    margin-top: -67.5%;
+}
+
+
+#div3 {
+    position: relative;
+}
+
+#div7 {
+    z-index: 1000;
+    position: absolute;
+    margin-top: -67.5%;
+}
+
+#ibm-textcolor{
+    color: #AEAEAE;
+}
+
+#ibm-textcolor>a{
+    color: #4178BE;
+}
+
+#linkFormat {
+    color: #FFF;
+    text-decoration: none;
+    background-color: none;
+}
+
+#geoTitleNA:hover {
+    font-size: 2em;
+    font-weight: bold;
+    color: rgba(84, 153, 199, 1);
+}
+
+
+
+#geoTitleLA:hover {
+    font-size: 2em;
+    font-weight: bold;
+    color: rgba(84, 153, 199, 1);
+}
+
+#geoTitleEMEA:hover {
+    font-size: 2em;
+    font-weight: bold;
+    color: rgba(84, 153, 199, 1);
+}
+
+#geoTitleAP:hover {
+    font-size: 2em;
+    font-weight: bold;
+    color: rgba(84, 153, 199, 1);
+}
+
+#topRow {
+    position: relative;
+    text-align: center;
+    top: 50px;
+}
+
+
+#utilContainer {
+    display: inline-block;
+    position: relative;
+    margin-left: -15px;
+}
+
+#geoTitleNA, #geoTitleLA,#geoTitleEMEA,#geoTitleAP {
+    text-decoration: none;
+    background-color: none;
+    text-align: center;
+    position: relative;
+    font-size: 150%;
+    z-index: 4000;
+}
+
+#utilizationLabel,  #utilizationLabelLA, #utilizationLabelEMEA {
+    z-index: 6000;
+}
+
+#overutilizedStatEMEA:hover #statLabel{
+    font-weight: bold;
+    font-size: 0.8em;
+    color: rgba(84, 153, 199, 1);
+
+}
+
+#overutilizedStatNA:hover #statLabel{
+    font-weight: bold;
+    font-size: 0.8em;
+    color: rgba(84, 153, 199, 1);
+
+}
+
+#overutilizedStatLA:hover #statLabel{
+    font-weight: bold;
+    font-size: 0.8em;
+    color: rgba(84, 153, 199, 1);
+
+}
+
+#overutilizedStatAP:hover #statLabel{
+    font-weight: bold;
+    font-size: 0.8em;
+    color: rgba(84, 153, 199, 1);
+
+}
+
+
+.radial_container {
+    padding-top: 75%;
+    position: absolute;
+    z-index: 1;
+}
+
+
+#secondRow {
+    position: relative;
+    text-align: center;
+    top: -40px;
+
+}
+
+#clientContainer {
+    z-index: 800;
+    display: inline-block;
+    position: relative;
+    width: calc(calc(100vw) * 0.8 / 3);
+    margin-left: -30px;
+}
+
+#statLabel {
+    font-size: 0.7em;
+}
+
+
+
+@media screen and (max-width: 1441px) {
+    #div1 {
+        position: relative;
+    }
+
+    #div5 {
+        z-index: 1000;
+        position: absolute;
+        margin-top: -63.6%;
+    }
+
+    #div4 {
+        position: relative;
+    }
+
+    #div8 {
+        z-index: 1000;
+        position: absolute;
+        margin-top: -63.6%;
+    }
+
+    #div2 {
+        position: relative;
+    }
+
+    #div6 {
+        z-index: 1000;
+        position: absolute;
+        margin-top: -63.6%;
+    }
+
+
+    #div3 {
+        position: relative;
+    }
+
+    #div7 {
+        z-index: 1000;
+        position: absolute;
+        margin-top: -63.6%;
+    }
+
+}

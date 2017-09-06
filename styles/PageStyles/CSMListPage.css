@@ -1,0 +1,58 @@
+body {
+	position: relative;
+	font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif !important;
+}
+
+a {
+	cursor: pointer;
+}
+
+tr {
+	cursor: pointer;
+}
+
+div, li {
+	font-size: 16px;
+}
+
+.bluebackground{
+	background: url("/bluebackground.png") !important;
+}
+
+.ui.sortable.table thead th {
+	color: white !important;
+}
+
+.ui.card, .ui.cards>.card {
+	border-radius: 0px !important;
+}
+
+.ui.dimmer {
+	background-color: #323232 !important;
+}
+
+/*removes underline from the a tags */
+.media-body>a, .well>h3>a {
+	text-decoration: none !important;
+}
+
+#menu-name>a {
+	color: #ececec;
+}
+.top-padding{
+	padding: 20px;
+}
+
+#parent-container{
+	position: auto;
+	z-index:0;
+}
+
+h1:first-child {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.content{
+	background: #343334;
+}

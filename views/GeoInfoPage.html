@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<head>
+	<title>Geo Info</title>
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+	<!-- External styling -->
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.19.1/vis.min.css"/>
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+	<!-- Source styling -->
+	<link rel="stylesheet" type="text/css" href="/PageStyles/GeoInfoPage.css">
+	<link rel="stylesheet" type="text/css" href="/navbar.css">
+
+	<!-- ibm style sheets -->
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/www.css"/>
+	<script src = "https://1.www.s81c.com/common/stats/ida_stats.js"></script>
+	<script src = "https://1.www.s81c.com/common/v18/js/www.js"></script>
+	<link href="//1.www.s81c.com/common/v18/css/textcolumns.css" rel="stylesheet">
+
+	<!-- ibm fluid grid  -->
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/grid-fluid.css" />
+
+
+	<!-- Dependencies -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.19.1/vis.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+	<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+
+
+
+	<script type="text/javascript" src="/dependencies/tablesort.js"></script>
+
+	<!-- Source files -->
+	<script type="text/javascript" src="/angularConfig.js"></script>
+	<script type="text/javascript" src="/controllers/navbarController.js"></script>
+	<script type="text/javascript" src="/controllers/pageControllers/GeoInfoPageController.js"></script>
+	<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+	<script type="text/javascript" src="/libraries/dates.js"></script>
+	<script type="text/javascript" src="/libraries/query.js"></script>
+	<script type="text/javascript" src="/libraries/load.js"></script>
+
+</head>
+
+<body ng-app="CSMApp"  ng-controller="GeoInfoPageController" id="body">
+
+	<application-navbar></application-navbar>
+	<div class="ui {{isLoading ? 'active' : ''}} page dimmer">
+		<div class="ui text loader">Fetching Data ...</div>
+	</div>
+
+	<!-- lead space -->
+	<div id="ibm-leadspace-head" class="ibm-alternate ibm-fluid ibm-fullwidth bluebackground">
+		<div id="ibm-leadspace-body" class="ibm-padding-top-r2 ibm-padding-bottom-r2" ng-cloak>
+			<div class="ibm-columns">
+				<div class="ibm-col-6-4">
+					<h1 class="ibm-h1 ibm-light ibm-textcolor-blue-50"><strong>{{region}}</strong></h1>
+					<br />
+					<p class="ibm-ind-link">
+						<a href="#Utilization" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link">Utilization</a>
+						<a href="#ClientList" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link">Clients</a>
+						<a href="#CSMList" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link">CSMs</a></p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- rest of body -->
+		<div class="ibm-fluid ibm-fullwidth ibm-background-gray-80 ibm-textcolor-gray-30">
+			<div class="top-padding"></div>
+			<div class = "ui grid" align = "center">
+				<!-- gauges -->
+				<div class = "four column row">
+
+					<div class = "column" ng-click = "units = !units">
+						<div class = "label">Capacity <i class="info circle icon" data-content="The sum of all the CSMs' capacity in this region" data-position="right center"></i></div>
+						<div class = "top-padding"></div>
+						<div class = "ui blue statistic">
+							<div class = "value" id = "geoCapacity" data-content = "click to switch views">{{units ?round(geoCapacity/20,2):round(geoCapacity/80,2)}}
+								<i ng-show= "units" class="mini file text outline icon"></i><i ng-show = "!units" class="small user icon"></i>
+							</div>
+						</div>
+						<div ng-show="units" class = "label" style= "color: #2d74da">subscriptions</div>
+						<div ng-show="!units" class = "label" style= "color: #2d74da">people</div>
+					</div>
+
+					<div class = "column"  ng-click = "units = !units">
+						<div class = "label">Assignments <i class="info circle icon" data-content="The sum of all Premium Support Contracts assigned to CSMs in this region" data-position="right center"></i></div>
+						<div class = "top-padding"></div>
+						<div class ="ui blue statistic">
+							<div class = "value" id = "geoAssignment" data-content = "click to switch views">{{units ?round(geoAssignments/20, 2):round(geoAssignments/80, 2)}}
+								<i ng-show= "units" class="mini file text outline icon"></i><i ng-show = "!units" class="small user icon"></i>
+							</div>
+						</div>
+						<div ng-show="units" class = "label" style= "color: #2d74da">subscriptions</div>
+						<div ng-show="!units" class = "label" style= "color: #2d74da">people</div>
+					</div>
+
+					<div class="column">
+						<div class = "label">Assigned Utilization<i class="info circle icon" data-content="The ratio between the total assignments and total capacity of this region" data-position="right center"></i></div>
+						<div class = "top-padding"></div>
+						<div class = "ui blue statistic">
+							<div class = "value">
+								{{geoUtil}}<i class=" mini percent icon"></i>
+							</div>
+						</div>
+						<div class = "label"></div>
+					</div>
+
+					<div class="column">
+						<div class = "label">Actual Utilization <i class="info circle icon" data-content="The ratio between the total Work Effort and total capacity of this region" data-position="right center"></i></div>
+						<div class = "top-padding"></div>
+						<div class = "ui blue statistic">
+							<div class = "value">{{actualUtilization}}<i class="mini percent icon"></i></div>
+						</div>
+						<div class = "label"></div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Left Column -->
+			<div class="ibm-col-12-9" ng-cloak>
+
+				<!-- projected utilization and workload graph -->
+				<div class = "top-padding"></div>
+				<div id="Utilization">
+					<h4 id="ProjectedUtilization" class = "ibm-h4">Projected Capacity and Assignments</h4>
+					<div class="ibm-rule ibm-alternate"><hr></div>
+					<!-- utilization and workload graph -->
+					<div class="moduleContainer">
+						<div class="btn-group ibm-right">
+							<button type="button" class="ibm-btn-sec ibm-btn-blue-50" ng-click="selectedView = 'Graph'">Graph</button>
+							<button type="button" class="ibm-btn-sec ibm-btn-blue-50" ng-click="selectedView = 'Numerical'">Numerical</button>
+						</div>
+						<div class="chartContainer">
+							<canvas id="CSMLineGraph"
+							ng-show="selectedView == 'Graph'"
+							tc-chartjs-line
+							chart-data="data"
+							chart-options="options">
+						</canvas>
+						<table class="ui selectable inverted table" ng-show="selectedView == 'Numerical'" id="CSMUtilizationTable" ng-cloak>
+							<thead>
+								<tr>
+									<th>{{timeDivision}}</th>
+									<th>Assignments (%)</th>
+									<th>Capacity (%)</th>
+									<th>Percent Utilization (%)</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="division in xAxisLabels[timeDivision] track by $index">
+									<td>{{division}}</td>
+									<td>{{data.datasets[1].data[$index]}}</td>
+									<td>{{data.datasets[0].data[$index]}}</td>
+									<td>{{calculateUtilization(data.datasets[1].data[$index], data.datasets[0].data[$index])}}</td>
+								</tr>
+							</table>
+						</div>
+						<div class="btn-group" id="graph-list-toggle">
+							<button class="ibm-btn-sec ibm-btn-blue-50" ng-click="moveGraph('backward')"><i class="chevron left icon"></i> Back</button>
+							<button class="ibm-btn-sec ibm-btn-blue-50" ng-click="moveGraph('forward')">Forward <i class="chevron right icon"></i> </button>
+						</div>
+						<div class="btn-group" id="month-quarter-toggle">
+							<button class="ibm-btn-sec ibm-btn-blue-50" ng-click="changeTimeDivision('Month')">Month</button>
+							<button class="ibm-btn-sec ibm-btn-blue-50" ng-click="changeTimeDivision('Quarter')">Quarter</button>
+						</div>
+					</div>
+				</div>
+				<br><br>
+
+				<div class = "top-padding"></div>
+				<!-- Clients List -->
+				<h4 id="ClientList" class = "ibm-h4">Active Clients List</h4>
+				<div class="ibm-rule ibm-alternate"><hr></div>
+
+				<!-- Client List Table View -->
+				<div align ="center" class = "ibm-background-gray-80 ibm-textcolor-gray-30 clientTableContainer" ng-cloak>
+					<table class = "ui selectable sortable inverted table" id="clientTable">
+						<thead>
+							<tr>
+								<th>Client Name </th>
+								<th class = "float">Total Premium Support Purchased </th>
+								<th>Associated CSMs </th>
+								<th>Market </th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat = "client in clients | orderBy: 'clientName'" ng-click="library.redirectTOETA(client.accountID)">
+								<td>{{ client.clientName }}</td>
+								<td>{{ client.totalPurchased }}%</td>
+								<td>{{ client.associatedCSMS }}</td>
+								<td>{{ markets[client.clientMarket] }}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+
+			<!-- right side column -->
+			<div class = "ibm-col-12-3" ng-cloak>
+				<!-- CSM List -->
+				<div class = "top-padding"></div>
+				<div id="CSMList">
+					<h4 class="ibm-h4">CSM List</h4>
+					<div class="ibm-rule ibm-alternate"><hr></div>
+					<div class="RightColumnContainer">
+						<div class="item" ng-repeat="csm in csms | orderBy: 'csmName'">
+							<a class = "ibm-blocklink ibm-highlight-light ibm-padding-content" href = "/CSM/{{csmUrl(csm)}}">
+								<h4 class="ibm-h4 ibm-textcolor-{{csm.workEffort > csm.csmCapacity ? 'red' : 'blue'}}-50">{{csm.csmName}} </h4>
+								<div>Assigned:  {{query.calculateAssigned([csm], date)}}%</div>
+								<div>Capacity:  {{csm.csmCapacity}}%</div>
+								<div>Work Effort:  {{csm.workEffort}}%</div>
+								<div>Assigned Utilization: {{library.calculatePercent(query.calculateAssigned([csm], date), csm.csmCapacity, 2)}}%</div>
+								<div>Actual Utilization:  {{library.calculatePercent(csm.workEffort, csm.csmCapacity, 2)}}%</div>
+							</a>
+						</div>
+					</div>
+				</div>
+				<br />
+			</div>
+		</div>
+	</body>

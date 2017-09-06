@@ -1,0 +1,85 @@
+/*****************
+GENERAL
+******************/
+body {
+	position: relative;
+	overflow: auto;
+	background-color: #303030;
+}
+#body {
+	background-color: #303030;
+}
+a {
+	cursor: pointer;
+}
+
+tr {
+	cursor: pointer;
+}
+
+ul {
+	list-style-type: none !important;
+}
+#menu-name>a {
+	color: #ececec;
+}
+
+.ui.sortable.table thead th {
+	color: white !important;
+}
+
+.clientTableContainer{
+	padding-bottom: 40px;
+}
+
+.bluebackground{
+	background: url("/bluebackground.png") !important;
+}
+
+.moduleContainer {
+	padding: 20px;
+}
+
+.chartContainer {
+	margin: 20px;
+}
+
+.table {
+	margin-top: 20px;
+}
+
+
+.clientListContainer {
+	position: relative;
+}
+
+.clientList {
+	height: inherit;
+	padding: 0px 15px;
+	width: 500px;
+}
+
+.RightColumnContainer {
+	max-height: 1500px;
+	overflow-y: scroll;
+}
+
+#graph-list-toggle {
+	float: left;
+}
+
+#month-quarter-toggle {
+	float: right;
+}
+
+.top-padding{
+	padding: 20px;
+}
+
+#geoCapacity:hover{
+	font-weight: bold;
+}
+
+#geoAssignment:hover{
+	font-weight: bold;
+}

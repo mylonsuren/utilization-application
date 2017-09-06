@@ -1,0 +1,66 @@
+<!-- modal to show reports -->
+<div class="ui long modal CSMsNotLoggedInToETAReport">
+    <div class="header">CSMs Not Logged In to ETA Report<div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+    <div class="content">
+        <p>View a list of CSMs listed on an adoption record but have not yet signed in to ETA
+            <button ng-show="csms.length > 0" style="display: inline-block; margin-bottom: 10px;" class="ui right floated button" ng-click="viewPDFCSMsNotLoggedIn()">View More ({{viewMoreButtonPremSupport(csmsNotLoggedIn)}})</button>
+        </p>
+        <div class="ui {{isLoading ? 'active':''}} inverted dimmer">
+            <div class="ui text loader">Loading</div>
+        </div>
+
+        <style>
+            #clientTitle:hover {
+                color: #273746;
+                text-decoration: none;
+                font-weight: bold;
+            }
+        </style>
+
+        <table class="ui very compact selectable small sortable celled table" ng-show="csms.length > 0">
+            <thead>
+                <tr>
+                    <th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('csm') ? flipSortOrder(clientTableSortingOrder):'-csm')" class="center aligned">
+                        CSM <i ng-show="clientTableSortingOrder.includes('csm')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+                    </th>
+                    <th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('csm') ? flipSortOrder(clientTableSortingOrder):'-csms[0].name')" class="center aligned">
+                        Client(s) <i ng-show="clientTableSortingOrder.includes('csm')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+                    </th>
+                    <th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('clientStart') ? flipSortOrder(clientTableSortingOrder):'-clientStart')" class="center aligned">
+                        CSM Start Date <i ng-show="clientTableSortingOrder.includes('clientStart')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="result in csms| orderBy : clientTableSortingOrder | limitTo: 5" ng-click="redirect(result.accountID)">
+                    <td>
+                        {{result.csm}}
+                        <div class="ui sub header">
+                            {{result.csmRegion}}
+                        </div>
+                    </td>
+                    <td>
+                        {{result.clientName}}
+                    </td>
+                    <td style="text-align: center;">
+                        {{getMonthYearDateFromDate(result.clientStart)}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="center aligned" ng-show="csms.length <= 0">
+            <h2 class="ui huge icon header center aligned" style="margin-top: 75px;" >
+                <i class="building outline icon"></i>
+                No CSMs Who Have Not Logged In
+            </h2>
+            <p style="text-align: center;">
+                There are currently no CSMs who have not logged in
+            </p>
+        </div>
+
+    </div>
+    <div class="actions">
+        <button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+    </div>
+</div>

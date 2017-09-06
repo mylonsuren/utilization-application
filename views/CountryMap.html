@@ -1,0 +1,94 @@
+<head>
+	<title>Country</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- External styling -->
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+
+	<!-- Source styling -->
+	<link rel="stylesheet" type="text/css" href="/PageStyles/Map.css">
+	<link rel="stylesheet" type="text/css" href="/navbar.css">
+
+	<!-- Dependencies -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.28//angular-route.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+	<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+
+	<!--Source files -->
+	<script type="text/javascript" src="/angularConfig.js"></script>
+	<script type="text/javascript" src="/controllers/navbarController.js"></script>
+
+	<script type="text/javascript" src="/controllers/pageControllers/CountryMapController.js"></script>
+	<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+	<script type="text/javascript" src="/libraries/dates.js"></script>
+	<script type="text/javascript" src="/libraries/query.js"></script>
+	<script type="text/javascript" src="/libraries/load.js"></script>
+
+	<!-- ibm style sheets -->
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/www.css"/>
+	<script src = "https://1.www.s81c.com/common/stats/ida_stats.js"></script>
+	<script src = "https://1.www.s81c.com/common/v18/js/www.js"></script>
+
+	<!-- ibm data tables -->
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/tables.css"/>
+	<script src = "https://1.www.s81c.com/common/v18/js/tables.js"></script>
+
+	<!-- dynamic tabs -->
+	<script src = "https://1.www.s81c.com/common/v18/js/dyntabs.js"></script>
+
+	<!-- ibm fluid grid  -->
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/grid-fluid.css" />
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+</head>
+
+<!--GEO/REGION MAP MENU-->
+
+<body ng-app="CSMApp" ng-controller="CountryMapController">
+
+	<application-navbar></application-navbar>
+
+	<!--Country View-->
+	<div ng-show="view == 'Country'">
+		<div class="ui {{isLoading ? 'active':''}} dimmer">
+			<div class="ui text loader">Loading...</div>
+		</div>
+
+		<div id="clientCountry_div" class="fixed"></div>
+
+		<div class="animated fadeInUp" id="clientTable_div"></div>
+
+
+		<div class="sidebar ibm-background-gray-80" id= "sidebar">
+			<h1 class ="ibm-h2 ibm-textcolor-white-core" id="padding-top" align='center'>{{countrySelected}} <i class="{{countrySelected.toLowerCase()}} flag"></i></h1>
+
+
+
+			<div id="padding-top" ></div>
+			<h4 id="ClientList" class = "ibm-h4 ibm-textcolor-white-core" align="center">Clients</h4>
+			<div class="ibm-rule ibm-alternate" id ="rule"><hr></div>
+			<div class=" clientListContainer">
+				<div ng-repeat="client in clients | orderBy: 'name'">
+					<a class = "ibm-blocklink ibm-highlight-light ibm-padding-content" href = "#">
+						<h4 class = "ibm-h4 ibm-textcolor-white-core">{{client.clientName}}</h4>
+						<div id="whiteText">Start: {{ dates.formatDate(dates.parseMongoDate(client.clientStart), 'fullDate') }}</div>
+						<div id="whiteText">End: {{ dates.formatDate(dates.parseMongoDate(client.clientEnd), 'fullDate')}}</div>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/master
+</body>

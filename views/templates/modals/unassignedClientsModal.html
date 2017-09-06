@@ -1,0 +1,46 @@
+<!-- modal to show reports -->
+<div class="ui long modal UnassignedClientsReport">
+	<div class="header">Unassigned Clients Report <div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+	<div class="content">
+		<p>View a summary of all clients with pending CSM assignments
+			<button style="display: inline-block; margin-bottom: 10px;" class="ui right floated button" ng-click="viewPDFUnassignedClients()">View More ({{viewMoreButton(results)}})</button>
+
+		</p>
+
+		<div class="ui {{isLoading ? 'active':''}} inverted dimmer">
+			<div class="ui text loader">Loading</div>
+		</div>
+
+		<style>
+			#clientTitle:hover {
+				color: #273746;
+				text-decoration: none;
+				font-weight: bold;
+			}
+		</style>
+
+		<div class="ui middle aligned divided list">
+			<div class="item" ng-repeat="client in results | orderBy: 'dateAdded' | limitTo: 5" ng-click="redirect(client.id)">
+				<div class="right floated middle aligned content">
+					<div class="ui tiny middle aligned header" style="text-align:right;">
+						{{getMonthYearDateFromDate(client.dateAdded)}}
+						<p class="ui grey tiny header" style="font-size: 12px;">
+							Date Added
+						</p>
+					</div>
+				</div>
+				<i class="building outline icon"></i>
+				<a class="ui large middle aligned content" id="clientTitle">
+					{{client.clientName}}
+					<div class="ui sub header">
+						{{client.clientRegion}}
+					</div>
+				</a>
+			</div>
+		</div>
+
+	</div>
+	<div class="actions">
+		<button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+	</div>
+</div>

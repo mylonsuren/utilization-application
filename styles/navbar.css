@@ -1,0 +1,45 @@
+/* need to put all navbar css in this file */
+html, body {
+	font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif !important;
+}
+
+.drop-down-items {
+	display: inline-block;
+	z-index: 9999;
+}
+
+.drop-down-text {
+	position: relative;
+	top: 10px;
+	left: 10px;
+}
+
+#menu-name>a {
+	color: #ececec;
+}
+
+.ui.search .prompt {
+	border-radius: 0px !important;
+	line-height: 1.2em !important;
+	margin-right: 5px !important;
+	margin-top: 5px !important;
+	margin-bottom: 5px !important;
+	padding-top: 7px !important;
+	padding-bottom: 7px !important;
+}
+
+#navbar{
+	z-index: 9999;
+	background-color: #323232 !important;
+	border-bottom: solid white 1px !important;
+
+}
+
+.results{
+	z-index: 9999;
+	width: 100% !important;
+}
+
+img {
+	cursor: pointer;
+}

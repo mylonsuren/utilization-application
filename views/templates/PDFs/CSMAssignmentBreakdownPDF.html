@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSM Assignment Breakdown Report</title>
+
+		<!--External Styling-->
+		<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+    <!--Internal Styling -->
+		<link rel="stylesheet" type="text/css" href="/PDFStyles/CSMAssignmentBreakdown.css">
+		<link rel="stylesheet" type="text/css" href="/print.css" media="print">
+
+    <!--Dependencies -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+    <script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.5.2/randomColor.min.js"></script>
+    <script type="text/javascript" src="/angularConfig.js"></script>
+    <script type="text/javascript" src="/navbarController.js"></script>
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+
+	    <!-- source code -->
+	    <script type="text/javascript" src="/angularConfig.js"></script>
+	    <script type="text/javascript" src="/controllers/navbarController.js"></script>
+		<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+		<script type="text/javascript" src="/libraries/dates.js"></script>
+		<script type="text/javascript" src="/libraries/query.js"></script>
+		<script type="text/javascript" src="/libraries/load.js"></script>
+		<script type="text/javascript" src="/controllers/PDFControllers/CSMAssignmentBreakdownPDFController.js"></script>
+		<!-- <script type="text/javascript" src="/csmClientGraphController.js"></script> -->
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+	</head>
+	<body ng-app="CSMApp" ng-controller="CSMAssignmentBreakdownPDFController">
+
+		<!--Print Menu-->
+		<div class="ui vertical mini labeled icon menu" style="position: fixed; top: 30px;">
+		  <a class="item" ng-click="print()">
+			<i class="grey print icon"></i>
+			Print
+		  </a>
+		</div>
+
+		<!--Extra Print Styling-->
+		<style media="print">
+			/*Hides Geo Selection Menu from Print View*/
+			#assignmentBreakdownTitle, .ui.compact.vertical.tiny.segments {
+				display: none;
+			}
+		</style>
+
+	  <div class="ui compact vertical tiny segments" style="position: fixed; top: 120px;">
+			<h4 class="ui top attached center aligned header">Filter Geos</h4>
+				<div class="ui segment">
+				  <div class="ui checkbox">
+					<input type="checkbox" name="frequency" checked="checked" ng-click="toggleView(0)">
+					<label>North America</label>
+				  </div>
+				</div>
+				<div class="ui segment">
+					<div class="ui checkbox">
+					<input type="checkbox" name="frequency" checked="checked" ng-click="toggleView(1)">
+					<label>Latin America</label>
+					</div>
+				</div>
+				<div class="ui segment">
+				  <div class="ui checkbox">
+					<input type="checkbox" name="frequency" checked="checked" ng-click="toggleView(2)">
+					<label>Asia-Pacific</label>
+				  </div>
+				</div>
+				<div class="ui segment">
+				  <div class="ui checkbox">
+					<input type="checkbox" name="frequency" checked="checked" ng-click="toggleView(3)">
+					<label>EMEA</label>
+				  </div>
+				</div>
+	  </div>
+
+		<!--First Page-->
+		<!--North America CSM Assignment Breakdown Graph-->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" ng-show="filters[0]" style="padding: 20px; margin-left: 200px; margin-right: 100px; margin-top: 90px;">
+					<div class="ui {{isLoading ? 'active': ''}} inverted dimmer">
+						<div class="ui text loader">
+							Gathering Data...
+						</div>
+					</div>
+					<div class="ui {{creatingNAPDF ? 'active': ''}} inverted dimmer">
+						<div class="ui text loader">
+							Creating Report...
+						</div>
+					</div>
+					<h1 class="ui header" style="padding-left: 60px;">
+						CSM Assignment Breakdown Report
+						<div class="sub header">North America - {{getMonthandYear()}}</div>
+					</h1>
+
+					<!--Graph-->
+					<div id="csmNorthAmericaClientChart" ng-show="NACSMs.length > 0"></div>
+
+					<!--Displays if there are no CSMs in North America-->
+					<div ng-show="NACSMs.length <= 0" class="center aligned" style="margin-bottom: 40px;">
+						<h2 class="ui huge centered icon header" style="margin-top: 75px;">
+							<i class="users icon"></i>
+							No CSMs in North America
+						</h2>
+						<p style="text-align: center;">
+							There are currently no CSMs in North America.
+						</p>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<!--Second Page-->
+		<!--Latin America CSM Assignment Breakdown Graph-->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" ng-show="filters[1]" style="padding: 20px; margin-left: 200px; margin-right: 100px;">
+					<div class="ui {{isLoading ? 'active': ''}} inverted dimmer">
+						<div class="ui text loader">
+							Gathering Data...
+						</div>
+					</div>
+					<div class="ui {{creatingLAPDF ? 'active': ''}} inverted dimmer">
+						<div class="ui text loader">
+							Creating Report...
+						</div>
+					</div>
+					<h1 class="ui header" style="padding-left: 60px;">
+						CSM Assignment Breakdown Report
+						<div class="sub header">Latin America - {{getMonthandYear()}}</div>
+					</h1>
+
+					<!--Graph-->
+					<div id="csmLatinAmericaClientChart" ng-show="LACSMs.length > 0"></div>
+
+					<!--Displays if there are no CSMs in Latin America-->
+					<div ng-show="LACSMs.length <= 0" class="center aligned" style="margin-bottom: 40px;">
+						<h2 class="ui huge centered icon header" style="margin-top: 75px;">
+							<i class="users icon"></i>
+							No CSMs in Latin America
+						</h2>
+						<p style="text-align: center;">
+							There are currently no CSMs in Latin America.
+						</p>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<!--Third Page-->
+		<!--Asia Pacific CSM Assignment Breakdown Graph-->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" ng-show="filters[2]" style="padding: 20px; margin-left: 200px; margin-right: 100px;">
+					<div class="ui {{isLoading ? 'active': ''}} inverted dimmer">
+						<div class="ui text loader">
+							Gathering Data...
+						</div>
+					</div>
+					<div class="ui {{creatingAPPDF ? 'active': ''}} inverted dimmer">
+						<div class="ui text loader">
+							Creating Report...
+						</div>
+					</div>
+					<h1 class="ui header" style="padding-left: 60px;">
+						CSM Assignment Breakdown Report
+						<div class="sub header">Asia-Pacific - {{getMonthandYear()}}</div>
+					</h1>
+					<!--Graph-->
+					<div id="csmAsiaPacificClientChart" ng-show="APCSMs.length > 0"></div>
+
+					<!--Displays if there are no CSMs in Asia Pacific-->
+					<div ng-show="APCSMs.length <= 0" class="center aligned" style="margin-bottom: 40px;">
+						<h2 class="ui huge centered icon header" style="margin-top: 75px;">
+							<i class="users icon"></i>
+							No CSMs in Asia Pacific
+						</h2>
+						<p style="text-align: center;">
+							There are currently no CSMs in Asia Pacific.
+						</p>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<!--Fourth Page-->
+		<!--EMEA CSM Assignment Breakdown Graph-->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card csmAssignment" ng-show="filters[3]" style="padding: 20px; margin-left: 200px; margin-right: 100px;">
+					<div class="ui {{isLoading ? 'active': ''}} inverted dimmer">
+						<div class="ui text loader">
+							Gathering Data...
+						</div>
+					</div>
+					<div class="ui {{creatingEMEAPDF ? 'active': ''}} inverted dimmer">
+						<div class="ui text loader">
+							Creating Report...
+						</div>
+					</div>
+					<h1 class="ui header" style="padding-left: 60px;">
+						CSM Assignment Breakdown Report
+						<div class="sub header">EMEA - {{getMonthandYear()}}</div>
+					</h1>
+
+					<!--Graph-->
+					<div id="csmEMEAClientChart" ng-show="EMEACSMs.length > 0"></div>
+
+					<!--Displays if there are no CSMs in EMEA-->
+					<div ng-show="EMEACSMs.length <= 0" class="center aligned" style="margin-bottom: 40px;">
+						<h2 class="ui huge centered icon header" style="margin-top: 75px;">
+							<i class="users icon"></i>
+							No CSMs in EMEA
+						</h2>
+						<p style="text-align: center;">
+							There are currently no CSMs in EMEA.
+						</p>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

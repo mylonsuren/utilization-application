@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Client Usage Report</title>
+
+	<!--External Styling-->
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+	<!-- Internal Styling -->
+	<link rel="stylesheet" type="text/css" href="/PDFStyles/ClientUsagePDF.css">
+	<link rel="stylesheet" type="text/css" href="/print.css" media="print">
+
+	<!--Dependencies -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+	<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+
+
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.js"></script>
+	<script type="text/javascript" src="/angularConfig.js"></script>
+	<script type="text/javascript" src="/controllers/navbarController.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+
+	<!--Library-->
+	<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+	<script type="text/javascript" src="/libraries/dates.js"></script>
+	<script type="text/javascript" src="/libraries/query.js"></script>
+	<script type="text/javascript" src="/libraries/load.js"></script>
+
+	<!--Controller-->
+	<script type="text/javascript" src="/controllers/PDFControllers/ClientUsagePDFController.js"></script>
+</head>
+
+
+<body ng-app="CSMApp" ng-controller="ClientUsagePDFController">
+
+	<!--Print Menu-->
+	<div class="ui vertical mini labeled icon menu" style="position: fixed; top: 100px;">
+		<a class="item" ng-click="print()">
+		<i class="grey print icon"></i>
+		Print
+		</a>
+	</div>
+
+	<!--First Page-->
+	<!--Top 5 Clients by Purchased CSM Support-->
+	<div class="page-break">
+		<div class = "ui one cards">
+			<div class="ui raised card {{first() === 0 ? 'first' : ''}}" id="context" ng-show="filters[0]" style="padding: 60px; margin-left: 200px; margin-right: 100px; margin-top: 90px;">
+				<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+					<div class="ui text loader">
+						Creating Reports...
+					</div>
+				</div>
+				<div class="ui two column grid">
+					<div class="column">
+						<h1 class="ui header">
+							Client Usage Report
+							<div class="sub header">A report of all client usage for {{getMonthandYear()}}</div>
+						</h1>
+					</div>
+					<div class="column">
+						<div class="ui four statistics">
+							<div class="statistic">
+								<div class="value">
+									{{avgClientPurchase}}%
+								</div>
+								<div class="label">
+									Avg. Client Purchase
+								</div>
+							</div>
+							<div class="statistic">
+								<div class="value">
+									{{clients.length}}
+								</div>
+								<div class="label">
+									Clients
+								</div>
+							</div>
+							<div class="statistic">
+								<div class="value">
+									{{contracts.length}}
+								</div>
+								<div class="label">
+									Contracts
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div class="ui sub header"> Top 5 Clients </div>
+				<div class="ui meta"> By Purchased CSM Support </div>
+				<table class="ui small celled selectable three column very compact table">
+					<thead>
+						<tr>
+							<th style="text-align:center">Client</th>
+							<th style="text-align:center">Associated CSM's</th>
+							<th style="text-align:center">Amount Purchased</th>
+
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="client in clients | orderBy: '-totalPurchased' | limitTo: 5" ng-click="redirect(client.accountID)">
+							<td>
+								<h4 class="ui image header">
+									<div class="content">
+										{{client.clientName}}
+										<div class="ui grey tiny header" style="font-size: 12px;">{{client.clientRegion}}</div>
+									</div>
+								</h4>
+							</td>
+							<td>
+								{{client.associatedCSMS}}
+							</td>
+							<td style="text-align:center">
+								{{client.totalPurchased}}%
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<!--Second Page-->
+	<!--Contracts Starting this Month-->
+	<div class="page-break">
+		<div class = "ui one cards">
+			<div class="ui raised card {{first() === 0 ? 'first' : ''}}" id="context" ng-show="filters[0]" style="padding: 60px; margin-left: 200px; margin-right: 100px;">
+				<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+					<div class="ui text loader">
+						Creating Reports...
+					</div>
+				</div>
+				<div class="ui two column grid">
+					<div class="column">
+						<h1 class="ui header">
+							Client Usage Report
+							<div class="sub header">A report of all client usage for {{getMonthandYear()}}</div>
+						</h1>
+					</div>
+					<div class="column">
+						<div class="ui four statistics">
+							<div class="statistic">
+								<div class="value">
+									{{avgClientPurchase}}%
+								</div>
+								<div class="label">
+									Avg. Client Purchase
+								</div>
+							</div>
+							<div class="statistic">
+								<div class="value">
+									{{clients.length}}
+								</div>
+								<div class="label">
+									Clients
+								</div>
+							</div>
+							<div class="statistic">
+								<div class="value">
+									{{contracts.length}}
+								</div>
+								<div class="label">
+									Contracts
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br />
+
+				<div class="ui sub header"> Contracts Starting in {{getMonthandYear()}}</div>
+				<table class="ui small celled selectable five column very compact table" ng-show="startingMonth.length > 0">
+					<thead>
+						<tr>
+							<th style="text-align:center">Client</th>
+							<th style="text-align:center">CSM</th>
+							<th style="text-align:center">Type</th>
+							<th style="text-align:center">Amount Purchased</th>
+							<th style="text-align:center">Start Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="clients in startingMonth | orderBy: 'startDate'" ng-click="redirect(clients.id)" ng-class="{active: {{alreadyStarted(clients.startDate)}}}">
+							<td>
+								<h4 class="ui image header">
+									<div class="content">
+										{{clients.name}}
+										<div class="sub header">{{clients.region}}</div>
+									</div>
+								</h4>
+							</td>
+							<td>
+								<div class="header">{{clients.csm}}</div>
+							</td>
+							<td style="text-align:center">
+								{{clients.type.toUpperCase()}}
+							</td>
+							<td style="text-align:center">
+								{{clients.cap}}%
+							</td>
+							<td style="text-align:center">
+								{{clients.start}}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="ui meta" ng-show="startingMonth.length <= 0">
+					No new contracts beginning in {{getMonthandYear()}}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--Third Page-->
+	<!--Contracts Ending this Month-->
+	<div class="page-break">
+		<div class = "ui one cards">
+			<div class="ui raised card {{first() === 0 ? 'first' : ''}}" id="context" ng-show="filters[0]" style="padding: 60px; margin-left: 200px; margin-right: 100px;">
+				<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+					<div class="ui text loader">
+						Creating Reports...
+					</div>
+				</div>
+				<div class="ui two column grid">
+					<div class="column">
+						<h1 class="ui header">
+							Client Usage Report
+							<div class="sub header">A report of all client usage for {{getMonthandYear()}}</div>
+						</h1>
+					</div>
+					<div class="column">
+						<div class="ui four statistics">
+							<div class="statistic">
+								<div class="value">
+									{{avgClientPurchase}}%
+								</div>
+								<div class="label">
+									Avg. Client Purchase
+								</div>
+							</div>
+							<div class="statistic">
+								<div class="value">
+									{{clients.length}}
+								</div>
+								<div class="label">
+									Clients
+								</div>
+							</div>
+							<div class="statistic">
+								<div class="value">
+									{{contracts.length}}
+								</div>
+								<div class="label">
+									Contracts
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div class="ui sub header"> Contracts Ending in {{getMonthandYear()}}</div>
+				<table class="ui small celled selectable five column very compact table" ng-show="endingMonth.length > 0">
+					<thead>
+						<tr>
+							<th style="text-align:center">Client</th>
+							<th style="text-align:center">CSM</th>
+							<th style="text-align:center">Type</th>
+							<th style="text-align:center">Amount Purchased</th>
+							<th style="text-align:center">End Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="clients in endingMonth | orderBy: 'endDate'" ng-click="redirect(clients.id)" ng-class="{active: {{alreadyFinished(clients.endDate)}}}">
+							<td>
+								<h4 class="ui image header">
+									<div class="content">
+										{{clients.name}}
+										<div class="sub header">{{clients.region}}</div>
+									</div>
+								</h4>
+							</td>
+							<td>
+								<div class="header">{{clients.csm}}</div>
+							</td>
+							<td style="text-align:center">
+								{{clients.type.toUpperCase()}}
+							</td>
+							<td style="text-align:center">
+								{{clients.cap}}%
+							</td>
+							<td style="text-align:center">
+								{{clients.end}}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="ui meta" ng-show="endingMonth.length <= 0">
+					No contracts ending in {{getMonthandYear()}}
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!--Fourth Page-->
+	<!--North American Client Graph-->
+	<div class="page-break">
+		<div class = "ui one cards">
+			<div class="ui raised card graph {{first() === 1 ? 'first' : ''}}" id="graphCard" ng-show="filters[1]" style="padding: 60px; padding-top: 20px; margin-left: 200px; margin-right: 100px;">
+				<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+					<div class="ui text loader">
+						Creating Reports...
+					</div>
+				</div>
+				<h1 class="ui header">
+					North America
+					<div class="sub header">A report of all client usage in the North Americas region for {{getMonthandYear()}}</div>
+				</h1>
+				<br />
+				<div class="graph" id="clientUsageGraphAmericas"></div>
+			</div>
+		</div>
+	</div>
+
+
+	<!--Fifth Page-->
+	<!--Latin Americas Client Graph-->
+	<div class="page-break">
+		<div class = "ui one cards">
+			<div class="ui raised card graph {{first() === 1 ? 'first' : ''}}" id="graphCard" ng-show="filters[1]" style="padding: 60px; padding-top: 20px; margin-left: 200px; margin-right: 100px;">
+				<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+					<div class="ui text loader">
+						Creating Reports...
+					</div>
+				</div>
+				<h1 class="ui header">
+					Latin America
+					<div class="sub header">A report of all client usage in the Latin Americas region for {{getMonthandYear()}}</div>
+				</h1>
+				<br />
+				<div class="graph" id="clientUsageGraphLatin-America"></div>
+			</div>
+		</div>
+	</div>
+
+	<!--Sixth Page-->
+	<!--EMEA Client Graph-->
+	<div class="page-break">
+		<div class = "ui one cards">
+			<div class="ui raised card graph {{first() === 1 ? 'first' : ''}}" id="graphCard" ng-show="filters[1]" style="padding: 60px; padding-top: 20px; margin-left: 200px; margin-right: 100px;">
+				<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+					<div class="ui text loader">
+						Creating Reports...
+					</div>
+				</div>
+				<h1 class="ui header">
+					EMEA
+					<div class="sub header">A report of all client usage in the EMEA region for {{getMonthandYear()}}</div>
+				</h1>
+				<br />
+				<div class="graph" id="clientUsageGraphEMEA"></div>
+			</div>
+		</div>
+	</div>
+
+	<!--Seventh Page-->
+	<!--Asia Pacific Client Graph-->
+	<div class="page-break">
+		<div class = "ui one cards">
+			<div class="ui raised card graph {{first() === 1 ? 'first' : ''}}" id="graphCard" ng-show="filters[1]" style="padding: 60px; padding-top: 20px; margin-left: 200px; margin-right: 100px;">
+				<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+					<div class="ui text loader">
+						Creating Reports...
+					</div>
+				</div>
+				<h1 class="ui header">
+					Asia-Pacific
+					<div class="sub header">A report of all client usage in the Asia-Pacific region for {{getMonthandYear()}}</div>
+				</h1>
+				<br />
+				<div class="graph" id="clientUsageGraphAsia-Pacific"></div>
+			</div>
+		</div>
+	</div>
+
+	<!--Extra Print View Styling-->
+	<style media="print">
+		/*Removes Contract Table when Printing*/
+		#contractList {
+			display: none;
+		}
+	</style>
+
+	<!--Eighth Page-->
+	<!--Contract Table-->
+	<div class="page-break">
+		<div class = "ui one cards">
+			<div class="ui raised card graph {{first() === 1 ? 'first' : ''}}" id="contractList" ng-show="filters[1]" style="min-height: 1000px; padding: 60px; padding-top: 20px; margin-left: 200px; margin-right: 100px;">
+				<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+					<div class="ui text loader">
+						Creating Reports...
+					</div>
+				</div>
+				<h1 class="ui header">
+					Contracts
+					<div class="sub header">A list of all Contracts for {{getMonthandYear()}}</div>
+				</h1>
+				<br />
+
+				<!--Dropdown Search Menus-->
+				<div class="ui {{screenWidth < 1440 ? 'three':'five'}} column grid">
+					<div class="ui column">
+						<select class="ui search selection dropdown" ng-model="searchContracts" id="contractsDropdown">
+							<option value="">Clients</option>
+							<option>All Clients</option>
+							<option ng-repeat="client in clients">{{client.clientName}}</option>
+						</select>
+					</div>
+					<div class="ui column">
+						<select class="ui search selection dropdown" ng-model="searchGeo" id="geoDropdown">
+							<option value="">Client Geo</option>
+							<option>All Geos</option>
+							<option ng-repeat="geo in searchGeos">{{geo}}</option>
+						</select>
+					</div>
+					<div class="ui column">
+						<select class="ui search selection dropdown" ng-model="searchCSM" id="csmDropdown">
+							<option value="">CSM's</option>
+							<option>All CSM's</option>
+
+							<option ng-repeat="csm in csms">{{csm.csmName}}</option>
+						</select>
+					</div>
+					<div class="ui column">
+						<select class="ui search selection dropdown" ng-model="searchRole" id="roleDropdown">
+							<option value="">Roles</option>
+							<option>All Roles</option>
+
+							<option ng-repeat="role in searchRoles">{{role.toUpperCase()}}</option>
+						</select>
+					</div>
+					<div class="ui column">
+						<select class="ui search selection dropdown" ng-model="searchType" id="typeDropdown">
+							<option value="">Contract Types</option>
+							<option>All Contract Types</option>
+
+							<option ng-repeat="contract in contractTypes">{{contract.toUpperCase()}}</option>
+						</select>
+					</div>
+				</div>
+
+				<!--Contract Table-->
+				<table class="ui small celled selectable seven column very compact table">
+					<thead>
+						<tr>
+							<th style="text-align:center">Contract</th>
+							<th style="text-align:center">CSM</th>
+							<th style="text-align:center">Role</th>
+							<th style="text-align:center">Type</th>
+							<th style="text-align:center">Amount Purchased</th>
+							<th style="text-align:center">Start Date</th>
+							<th style="text-align:center">End Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="clients in contracts | filter: {
+							csm: searchCSM == 'All CSM\'s' ? '' : searchCSM,
+							role: searchRole == 'All Roles' ? '' : searchRole,
+							clientName: searchContracts == 'All Clients' ? '' : searchContracts,
+							isTrial: searchType == 'All Contract Types' ? '' : searchType,
+							clientRegion: searchGeo == 'All Geos' ? '' : searchGeo}" ng-click="redirect(clients.accountID)">
+							<td>
+								<h4 class="ui image header">
+									<div class="content">
+										{{clients.clientName}}
+										<div class="sub header">{{clients.clientRegion}}</div>
+									</div>
+								</h4>
+							</td>
+							<td>
+								<div class="header">{{clients.csm}}</div>
+							</td>
+							<td style="text-align:center">
+								{{clients.role.toUpperCase()}}
+							</td>
+							<td style="text-align:center">
+								{{clients.isTrial.toUpperCase()}}
+							</td>
+							<td style="text-align:center">
+								{{clients.clientCapacity}}%
+							</td>
+							<td style="text-align:center">
+								{{getMonthYearDateFromDate(clients.clientStart)}}
+							</td>
+							<td style="text-align:center">
+								{{getMonthYearDateFromDate(clients.clientEnd)}}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>

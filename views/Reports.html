@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Reports</title>
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- External styling -->
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+
+	<!-- Source styling -->
+	<link rel="stylesheet" type="text/css" href="/PageStyles/Reports.css">
+	<link rel="stylesheet" type="text/css" href="/navbar.css">
+
+	<!-- Dependencies -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.5.2/randomColor.min.js"></script>
+
+	<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+
+
+	<!--Source files -->
+	<script type="text/javascript" src="/angularConfig.js"></script>
+	<script type="text/javascript" src="/controllers/navbarController.js"></script>
+	<script type="text/javascript" src="/controllers/pageControllers/ReportsController.js"></script>
+
+	<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+	<script type="text/javascript" src="/libraries/dates.js"></script>
+	<script type="text/javascript" src="/libraries/query.js"></script>
+	<script type="text/javascript" src="/libraries/load.js"></script>
+
+	<!-- <script src="http://code.highcharts.com/4.2.2/highcharts.js"></script> -->
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+
+	<script src="/controllers/modalControllers/APModalController.js"></script>
+	<script src="/controllers/modalControllers/AvailableCSMsModalController.js"></script>
+	<script src="/controllers/modalControllers/ClientsWithoutPremiumSupportTagModalController.js"></script>
+	<script src="/controllers/modalControllers/ClientUsageModalController.js"></script>
+	<script type="text/javascript" src="/controllers/modalControllers/CSMAssignmentBreakdownModalController.js"></script>
+	<script src="/controllers/modalControllers/CSMsNotLoggedInToETAModalController.js"></script>
+	<script src="/controllers/modalControllers/EMEAModalController.js"></script>
+	<script src="/controllers/modalControllers/GlobalModalController.js"></script>
+	<script src="/controllers/modalControllers/LAModalController.js"></script>
+	<script src="/controllers/modalControllers/MissingInfoOnETAModalController.js"></script>
+	<script src="/controllers/modalControllers/NAModalController.js"></script>
+	<script src="/controllers/modalControllers/OverusingClientsModalController.js"></script>
+	<script src="/controllers/modalControllers/OverutilizedCSMsModalController.js"></script>
+	<script src="/controllers/modalControllers/OverutilizedGeographiesModalController.js"></script>
+	<script src="/controllers/modalControllers/TrialClientsModalController.js"></script>
+	<script src="/controllers/modalControllers/UnassignedClientsModalController.js"></script>
+	<script src="/controllers/modalControllers/UpcomingAndEndingContractsModalController.js"></script>
+
+
+	<!-- ibm style sheets -->
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/www.css"/>
+	<script src = "https://1.www.s81c.com/common/stats/ida_stats.js"></script>
+	<script src = "https://1.www.s81c.com/common/v18/js/www.js"></script>
+
+	<!-- ibm data tables -->
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/tables.css"/>
+	<script src = "https://1.www.s81c.com/common/v18/js/tables.js"></script>
+
+	<!-- dynamic tabs -->
+	<script src = "https://1.www.s81c.com/common/v18/js/dyntabs.js"></script>
+
+	<!-- ibm fluid grid  -->
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/grid-fluid.css" />
+</head>
+
+<body ng-app="CSMApp" ng-controller="reportsController">
+	<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+		<div class="ui large text loader">
+			Creating Reports...
+		</div>
+	</div>
+	<application-navbar></application-navbar>
+	<div class="spacer"></div>
+
+<!-- ng-show="report.reportClassName == 'CSMAssignmentBreakdown'" -->
+	<br />
+	<div class="ibm-fluid" data-widget="setsameheight" data-items=".ibm-card" data-always="true">
+		<div class="ui header">
+			Utilization
+			<div class="ui right floated sub header">
+				7 Reports
+			</div>
+			<hr />
+		</div>
+			<div class="ibm-col-12-4 ibm-col-medium-12-6" ng-repeat="report in reports | limitTo: 7 | orderBy: '-isFavourite'">
+				<div class="ibm-card" ng-cloak>
+					<div class="ibm-card__content">
+						<div class="ibm-h4 ibm-bold">{{report.name}} <i ng-click="toggleFavourite(report)" ></i></div>
+						<hr />
+						<p>{{report.description}}</p>
+					</div>
+					<div class="ibm-card__bottom">
+						<p class="ibm-btn-row">
+							<button class="ibm-btn-pri ibm-btn-small ibm-fullwidth" ng-click="displayReport(report.reportClassName)">Preview Report</button>
+							<button class="ibm-btn-pri ibm-btn-small ibm-fullwidth" ng-click="viewPDF(report.reportClassName)" ng-disabled="{{report.isDisabled ? 'true' : 'false'}}">View PDF</button>
+						</p>
+					</div>
+				</div>
+			</div>
+	</div>
+
+	<div class="ibm-fluid" data-widget="setsameheight" data-items=".ibm-card" data-always="true">
+		<div class="ui header">
+			CSM Assignment
+			<div class="ui right floated sub header">
+				2 Reports
+			</div>
+			<hr />
+		</div>
+			<div class="ibm-col-12-4 ibm-col-medium-12-6" ng-repeat="report in reports | limitTo: (7 - reports.length) | orderBy: '-isFavourite'">
+				<div class="ibm-card" ng-show="$index < 2" ng-cloak>
+					<div class="ibm-card__content">
+						<div class="ibm-h4 ibm-bold">{{report.name}} <i ng-click="toggleFavourite(report)" ></i></div>
+						<hr />
+						<p>{{report.description}}</p>
+					</div>
+					<div class="ibm-card__bottom">
+						<p class="ibm-btn-row">
+							<button class="ibm-btn-pri ibm-btn-small ibm-fullwidth" ng-click="displayReport(report.reportClassName)">Preview Report</button>
+							<button class="ibm-btn-pri ibm-btn-small ibm-fullwidth" ng-click="viewPDF(report.reportClassName)" ng-disabled="{{report.isDisabled ? 'true' : 'false'}}">View PDF</button>
+						</p>
+					</div>
+				</div>
+			</div>
+	</div>
+
+	<div class="ibm-fluid" data-widget="setsameheight" data-items=".ibm-card" data-always="true">
+		<div class="ui header">
+			Clients
+			<div class="ui right floated sub header">
+				6 Reports
+			</div>
+			<hr />
+		</div>
+			<div class="ibm-col-12-4 ibm-col-medium-12-6" ng-repeat="report in reports | limitTo: (9 - reports.length) | orderBy: '-isFavourite'">
+				<div class="ibm-card" ng-show="$index < 6" ng-cloak>
+					<div class="ibm-card__content">
+						<div class="ibm-h4 ibm-bold">{{report.name}} <i ng-click="toggleFavourite(report)" ></i></div>
+						<hr />
+						<p>{{report.description}}</p>
+					</div>
+					<div class="ibm-card__bottom">
+						<p class="ibm-btn-row">
+							<button class="ibm-btn-pri ibm-btn-small ibm-fullwidth" ng-click="displayReport(report.reportClassName)">Preview Report</button>
+							<button class="ibm-btn-pri ibm-btn-small ibm-fullwidth" ng-click="viewPDF(report.reportClassName)" ng-disabled="{{report.isDisabled ? 'true' : 'false'}}">View PDF</button>
+						</p>
+					</div>
+				</div>
+			</div>
+	</div>
+
+	<div class="ibm-fluid" data-widget="setsameheight" data-items=".ibm-card" data-always="true">
+		<div class="ui header">
+			ETA
+			<div class="ui right floated sub header">
+				2 Reports
+			</div>
+			<hr />
+		</div>
+			<div class="ibm-col-12-4 ibm-col-medium-12-6" ng-repeat="report in reports | limitTo: (15 - reports.length) | orderBy: '-isFavourite'">
+				<div class="ibm-card" ng-cloak>
+					<div class="ibm-card__content">
+						<div class="ibm-h4 ibm-bold">{{report.name}} <i ng-click="toggleFavourite(report)" ></i></div>
+						<hr />
+						<p>{{report.description}}</p>
+					</div>
+					<div class="ibm-card__bottom">
+						<p class="ibm-btn-row">
+							<button class="ibm-btn-pri ibm-btn-small ibm-fullwidth" ng-click="displayReport(report.reportClassName)">Preview Report</button>
+							<button class="ibm-btn-pri ibm-btn-small ibm-fullwidth" ng-click="viewPDF(report.reportClassName)" ng-disabled="{{report.isDisabled ? 'true' : 'false'}}">View PDF</button>
+						</p>
+					</div>
+				</div>
+			</div>
+	</div>
+
+	<!-- modals -->
+	<ap-report></ap-report>
+	<available-c-s-ms-report></available-c-s-ms-report>
+	<clients-without-premium-support-tag-report></clients-without-premium-support-tag-report>
+	<client-usage-report></client-usage-report>
+	<csm-assignment-breakdown-report></csm-assignment-breakdown-report>
+	<csms-not-logged-in-to-e-t-a-report></csms-not-logged-in-to-e-t-a-report>
+	<emea-report></emea-report>
+	<global-report></global-report>
+	<la-report></la-report>
+	<missing-info-on-e-t-a-report></missing-info-on-e-t-a-report>
+	<na-report></na-report>
+	<overusing-clients-report></overusing-clients-report>
+	<overutilized-c-s-ms-report></overutilized-c-s-ms-report>
+	<overutilized-geographies-report></overutilized-geographies-report>
+	<trial-clients-report></trial-clients-report>
+	<unassigned-clients-report></unassigned-clients-report>
+	<upcoming-and-ending-contracts-report></upcoming-and-ending-contracts-report>
+
+</body>
+
+</html>

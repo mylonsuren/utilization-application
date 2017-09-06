@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>CSM Utilization Tool</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- External Styling -->
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+
+	<!-- Navigation Bar Styling -->
+	<link rel="stylesheet" type="text/css" href="/navbar.css">
+
+	<!-- Dependencies -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+	<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+
+  <!--Source files -->
+	<script type="text/javascript" src="/angularConfig.js"></script>
+	<script type="text/javascript" src="/controllers/navbarController.js"></script>
+
+
+	<!-- Library -->
+	<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+	<script type="text/javascript" src="/libraries/dates.js"></script>
+	<script type="text/javascript" src="/libraries/query.js"></script>
+	<script type="text/javascript" src="/libraries/load.js"></script>
+
+	<!-- Internal Styling -->
+	<link rel="stylesheet" href="/PageStyles/index.css">
+
+	<!-- Vizuly Specific Style Sheets (for Radial Graph) -->
+	<link rel="stylesheet" href="/vizuly.css">
+	<link rel="stylesheet" href="/vizuly_radial_progress.css">
+
+	<!-- D3.js (for Radial Graph) -->
+	<script type="text/javascript" src="/dependencies/GEO_Overview/radialprogress/lib/d3.min.js"></script>
+
+	<!-- Vizuly Dependencies (for Radial Graph) -->
+	<script type="text/javascript" src="/dependencies/GEO_Overview/radialprogress/lib/vizuly_core.min.js"></script>
+	<script type="text/javascript"src="/dependencies/GEO_Overview/radialprogress/lib/vizuly_radialprogress.min.js"></script>
+	<script type="text/javascript"src="/dependencies/GEO_Overview/radialprogress/src/theme/radialprogress.js"></script>
+
+	<!-- Controller -->
+	<script type="text/javascript" src="/controllers/pageControllers/index.js"></script>
+
+
+	<body ng-app="CSMApp" ng-controller="GeoOverviewController" ng-cloak>
+
+		<!-- Navigation Bar -->
+		<application-navbar></application-navbar>
+
+		<!-- Loader -->
+		<div>
+			<div class="ui {{isLoading ? 'active' : ''}} dimmer">
+				<div class="ui text loader">Fetching Data ...</div>
+			</div>
+		</div>
+
+
+		<!-- Grid for Radial Graph and Statistics -->
+		<div id="topRow" class="ui four column divided grid">
+
+			<!-- North America Column -->
+			<div class="ui column">
+				<div class="ui row">
+
+					<!-- Radial Graph -->
+					<div id="utilContainer" class="container" href="/Geo/North-America" style="margin-bottom: {{checkMarginBottomRadial()}}; ">
+						<a id="linkFormat" href="/Geo/North-America" ><h4 class="animated fadeInUp" id="geoTitleNA" data-content="Click for more information on North America." data-position="bottom center">North America</h4></a>
+						<div class="ui small {{!workEffort ? 'olive':'blue'}} inverted header" id="utilizationLabel">{{workEffort ? 'Actual':'Assigned'}}
+							<div class="ui tiny inverted sub header">
+								Utilization
+							</div>
+						</div>
+						<a ng-click="flipWorkEffort()">
+							<!-- Assigned Utilization -->
+							<div id="div1" data-content="Click to view {{workEffort ? 'Assigned':'Actual'}} Utilization" data-position="bottom center" class="radial_container" style="visibility:{{workEffort ? 'hidden':''}}"></div>
+							<!-- Actual Utilization -->
+							<div id="div5" data-content="Click to view {{workEffort ? 'Assigned':'Actual'}} Utilization" data-position="bottom center" class="radial_container" style="visibility:{{!workEffort ? 'hidden':''}}"></div>
+						</a>
+					</div>
+				</div>
+
+				<!-- Statistics -->
+				<div id="clientContainer" class="container" ng-click="percentage = !percentage">
+					<div class="ui {{checkNumStats()}} {{checkStatSize()}} statistics" id="geoStats">
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'30'}}px;" >
+							<div class="value">
+								{{percentage ? round(northAmerica.totalCapacity/20, 2): round(northAmerica.totalCapacity/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel" data-content="{{percentage ? 'The total number of subscriptions available (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Subscription<div style="margin-top: -10px;"></div>Capacity<i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel" data-content="{{percentage ? 'The total number of subscriptions available (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Total<div style="margin-top: -10px;"></div>Capacity<i class="info circle icon"></i>
+							</div>
+						</div>
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'-60'}}px;">
+							<div class="value">
+								{{percentage ? round(northAmerica.totalAssigned/20, 2): round(northAmerica.totalAssigned/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel"  data-content="{{percentage ? 'The number of subscriptions available to be assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of available CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}} " data-position="top center">
+								Assigned<div style="margin-top: -10px;"></div>Subscriptions <i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel"  data-content="{{percentage ? 'The number of subscriptions available to be assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of available CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}} " data-position="top center">
+								Total<div style="margin-top: -10px;"></div>Assigned <i class="info circle icon"></i>
+							</div>
+						</div>
+						<br />
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'30'}}px;" >
+							<div class="value">
+								{{percentage ? round((northAmerica.workEffort)/20, 2): round((northAmerica.workEffort)/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions currently being worked on, in terms of Percent Time Spent (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at 100% Time Spent in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Total <div style="margin-top: -10px;"></div>Work Effort <i class="info circle icon"></i>
+							</div>
+						</div>
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'-60'}}px;" >
+							<div class="value">
+								{{percentage ? round((northAmerica.totalCapacity - northAmerica.totalAssigned)/20, 2): round((northAmerica.totalCapacity - northAmerica.totalAssigned)/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions that have been assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at full capacity in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Available<div style="margin-top: -10px;"></div>Subscriptions <i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions that have been assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at full capacity in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Available<div style="margin-top: -10px;"></div>Capacity <i class="info circle icon"></i>
+							</div>
+						</div>
+					</div>
+					<br />
+					<div data-content="Click to view Overutilized CSMs Report." data-position="top center" class="ui one {{checkStatSize()}} statistics" id="overutilizedStatNA">
+						<a class="ui inverted statistic" ng-click="openOverutilizedCSMReport()">
+							<div class="value">
+								{{northAmerica.numberOverutilized}}
+							</div>
+							<div class="label" id="statLabel">
+								Overutilized CSMs
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latin America Column -->
+			<div class="ui column">
+				<div class="ui row">
+					<!-- Radial Graph -->
+					<div id="utilContainer" class="container" href="/Geo/Latin-America" style="margin-bottom: {{checkMarginBottomRadial()}};">
+						<a id="linkFormat" href="/Geo/Latin-America"><h4 class="animated fadeInUp" id="geoTitleLA" data-content="Click for more information on Latin America." data-position="bottom center">Latin America</h4></a>
+						<div class="ui small {{!workEffort ? 'olive':'blue'}} inverted header" id="utilizationLabelLA">{{workEffort ? 'Actual':'Assigned'}}
+							<div class="ui tiny inverted sub header">
+								Utilization
+							</div>
+						</div>
+						<a ng-click="flipWorkEffort()">
+							<!-- Assigned Utilization -->
+							<div id="div4" class="radial_container" data-content="Click to view {{workEffort ? 'Assigned':'Actual'}} Utilization" data-position="bottom center"  style="visibility:{{workEffort ? 'hidden':''}}"></div>
+							<!-- Actual Utilization -->
+							<div id="div8" class="radial_container" data-content="Click to view {{workEffort ? 'Assigned':'Actual'}} Utilization" data-position="bottom center" style="visibility:{{!workEffort ? 'hidden':''}}"></div>
+						</a>
+					</div>
+				</div>
+				<!-- Statistics -->
+				<div id="clientContainer" class="container" ng-click="percentage = !percentage">
+					<div class="ui {{checkNumStats()}} {{checkStatSize()}} statistics" id="geoStats">
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'30'}}px;">
+							<div class="value">
+								{{percentage ? round(latinAmerica.totalCapacity/20, 2) : round(latinAmerica.totalCapacity/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel" data-content="{{percentage ? 'The total number of subscriptions available (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Subscription<div style="margin-top: -10px;"></div>Capacity<i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel" data-content="{{percentage ? 'The total number of subscriptions available (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Total<div style="margin-top: -10px;"></div>Capacity<i class="info circle icon"></i>
+							</div>
+						</div>
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'-60'}}px;">
+							<div class="value">
+								{{percentage ? round(latinAmerica.totalAssigned/20, 2): round(latinAmerica.totalAssigned/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel"  data-content="{{percentage ? 'The number of subscriptions available to be assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of available CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}} " data-position="top center">
+								Assigned<div style="margin-top: -10px;"></div>Subscriptions <i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel"  data-content="{{percentage ? 'The number of subscriptions available to be assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of available CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}} " data-position="top center">
+								Total<div style="margin-top: -10px;"></div>Assigned <i class="info circle icon"></i>
+							</div>
+						</div>
+						<br />
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'30'}}px;" >
+							<div class="value">
+								{{percentage ? round((latinAmerica.workEffort)/20, 2): round((latinAmerica.workEffort)/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions currently being worked on, in terms of Percent Time Spent (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at 100% Time Spent in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Total <div style="margin-top: -10px;"></div>Work Effort <i class="info circle icon"></i>
+							</div>
+						</div>
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'-60'}}px;" >
+							<div class="value">
+								{{percentage ? round((latinAmerica.totalCapacity - latinAmerica.totalAssigned)/20, 2): round((latinAmerica.totalCapacity - latinAmerica.totalAssigned)/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions that have been assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at full capacity in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Available<div style="margin-top: -10px;"></div>Subscriptions <i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions that have been assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at full capacity in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Available<div style="margin-top: -10px;"></div>Capacity <i class="info circle icon"></i>
+							</div>
+						</div>
+					</div>
+					<br />
+					<div data-content="Click to view Overutilized CSMs Report." data-position="top center" class="ui one {{checkStatSize()}} statistics" id="overutilizedStatLA">
+						<a class="ui inverted statistic" ng-click="openOverutilizedCSMReport()">
+							<div class="value">
+								{{latinAmerica.numberOverutilized}}
+							</div>
+							<div class="label" id="statLabel">
+								Overutilized CSMs
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<!-- EMEA Column -->
+			<div class="ui column">
+				<div class="ui row">
+					<!-- Radial Graph -->
+					<div id="utilContainer" class="container" href="/Geo/EMEA" style="margin-bottom: {{checkMarginBottomRadial()}};">
+						<a id="linkFormat" href="/Geo/EMEA"><h4 class="animated fadeInUp" id="geoTitleEMEA" data-content="Click for more information on EMEA." data-position="bottom center">EMEA</h4></a>
+						<div class="ui small {{!workEffort ? 'olive':'blue'}} inverted header" id="utilizationLabelEMEA">{{workEffort ? 'Actual':'Assigned'}}
+							<div class="ui tiny inverted sub header">
+								Utilization
+							</div>
+						</div>
+						<a ng-click="flipWorkEffort()">
+							<!-- Assigned Utilization  -->
+							<div id="div2" class="radial_container" data-content="Click to view {{workEffort ? 'Assigned':'Actual'}} Utilization" data-position="bottom center" style="visibility:{{workEffort ? 'hidden':''}}"></div>
+							<!-- Actual Utilization -->
+							<div id="div6" class="radial_container" data-content="Click to view {{workEffort ? 'Assigned':'Actual'}} Utilization" data-position="bottom center" style="visibility:{{!workEffort ? 'hidden':''}}"></div>
+						</a>
+					</div>
+				</div>
+				<!-- Statistics -->
+				<div id="clientContainer" class="container" ng-click="percentage = !percentage">
+					<div class="ui {{checkNumStats()}} {{checkStatSize()}} statistics" id="geoStats">
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'30'}}px;">
+							<div class="value">
+								{{percentage ? round(emea.totalCapacity/20, 2): round(emea.totalCapacity/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel" data-content="{{percentage ? 'The total number of subscriptions available (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Subscription<div style="margin-top: -10px;"></div>Capacity<i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel" data-content="{{percentage ? 'The total number of subscriptions available (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Total<div style="margin-top: -10px;"></div>Capacity<i class="info circle icon"></i>
+							</div>
+						</div>
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'-60'}}px;">
+							<div class="value">
+								{{percentage ? round(emea.totalAssigned/20, 2): round(emea.totalAssigned/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel"  data-content="{{percentage ? 'The number of subscriptions available to be assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of available CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}} " data-position="top center">
+								Assigned<div style="margin-top: -10px;"></div>Subscriptions <i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel"  data-content="{{percentage ? 'The number of subscriptions available to be assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of available CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}} " data-position="top center">
+								Total<div style="margin-top: -10px;"></div>Assigned <i class="info circle icon"></i>
+							</div>
+						</div>
+						<br />
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'30'}}px;">
+							<div class="value">
+								{{percentage ? round((emea.workEffort)/20, 2): round((emea.workEffort)/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions currently being worked on, in terms of Percent Time Spent (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at 100% Time Spent in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Total <div style="margin-top: -10px;"></div>Work Effort <i class="info circle icon"></i>
+							</div>
+						</div>
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'-60'}}px;" >
+							<div class="value">
+								{{percentage ? round((emea.totalCapacity - emea.totalAssigned)/20, 2): round((emea.totalCapacity - emea.totalAssigned)/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions that have been assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at full capacity in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Available<div style="margin-top: -10px;"></div>Subscriptions <i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions that have been assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at full capacity in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Available<div style="margin-top: -10px;"></div>Capacity <i class="info circle icon"></i>
+							</div>
+						</div>
+					</div>
+					<br />
+					<div data-content="Click to view Overutilized CSMs Report." data-position="top center" class="ui one {{checkStatSize()}} statistics" id="overutilizedStatEMEA">
+						<a class="ui inverted statistic" ng-click="openOverutilizedCSMReport()">
+							<div class="value">
+								{{emea.numberOverutilized}}
+							</div>
+							<div class="label" id="statLabel">
+								Overutilized CSMs
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<!-- Asia Pacific Column -->
+			<div class="ui column">
+				<div class="ui row">
+					<!-- Radial Graph -->
+					<div id="utilContainer" class="container" href="/Geo/Asia-Pacific" style="margin-bottom: {{checkMarginBottomRadial()}};">
+						<a id="linkFormat" href="/Geo/Asia-Pacific"><h4 class="animated fadeInUp" id="geoTitleAP" data-content="Click for more information on Asia Pacific." data-position="bottom center">Asia Pacific</h4></a>
+						<div class="ui small {{!workEffort ? 'olive':'blue'}} inverted header" id="utilizationLabelAP">{{workEffort ? 'Actual':'Assigned'}}
+							<div class="ui tiny inverted sub header">
+								Utilization
+							</div>
+						</div>
+						<a ng-click="flipWorkEffort()">
+							<!-- Assigned Utilization -->
+							<div id="div3" class="radial_container" data-content="Click to view {{workEffort ? 'Assigned':'Actual'}} Utilization" data-position="bottom center" style="visibility:{{workEffort ? 'hidden':''}}"></div>
+							<!-- Actual Utilization -->
+							<div id="div7" class="radial_container" data-content="Click to view {{workEffort ? 'Assigned':'Actual'}} Utilization" data-position="bottom center"  style="visibility:{{!workEffort ? 'hidden':''}}"></div>
+						</a>
+					</div>
+				</div>
+				<!-- Statistics -->
+				<div id="clientContainer" class="container" ng-click="percentage = !percentage">
+					<div class="ui {{checkNumStats()}} {{checkStatSize()}} statistics" id="geoStats">
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'30'}}px;" >
+							<div class="value">
+								{{percentage ? round(asiaPacific.totalCapacity/20, 2): round(asiaPacific.totalCapacity/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel" data-content="{{percentage ? 'The total number of subscriptions available (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Subscription<div style="margin-top: -10px;"></div>Capacity<i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel" data-content="{{percentage ? 'The total number of subscriptions available (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Total<div style="margin-top: -10px;"></div>Capacity<i class="info circle icon"></i>
+							</div>
+						</div>
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'-60'}}px;" >
+							<div class="value">
+								{{percentage ? round(asiaPacific.totalAssigned/20, 2): round(asiaPacific.totalAssigned/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel"  data-content="{{percentage ? 'The number of subscriptions available to be assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of available CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}} " data-position="top center">
+								Assigned<div style="margin-top: -10px;"></div>Subscriptions <i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel"  data-content="{{percentage ? 'The number of subscriptions available to be assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of available CSMs in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}} " data-position="top center">
+								Total<div style="margin-top: -10px;"></div>Assigned <i class="info circle icon"></i>
+							</div>
+						</div>
+						<br />
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'30'}}px;" >
+							<div class="value">
+								{{percentage ? round((asiaPacific.workEffort)/20, 2): round((asiaPacific.workEffort)/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions currently being worked on, in terms of Percent Time Spent (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at 100% Time Spent in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Total <div style="margin-top: -10px;"></div>Work Effort <i class="info circle icon"></i>
+							</div>
+						</div>
+						<div class="ui inverted statistic" style="margin-left: {{checkNumStats() === 'one' ? '0':'-60'}}px;" >
+							<div class="value">
+								{{percentage ? round((asiaPacific.totalCapacity - asiaPacific.totalAssigned)/20, 2): round((asiaPacific.totalCapacity - asiaPacific.totalAssigned)/80, 2)}}&nbsp<i ng-show = "!percentage" class="user icon"></i><i ng-show = "percentage" class="file text outline icon"></i>
+							</div>
+							<div ng-show="percentage" class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions that have been assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at full capacity in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Available<div style="margin-top: -10px;"></div>Subscriptions <i class="info circle icon"></i>
+							</div>
+							<div ng-show="!percentage" class="label" id="statLabel" data-content="{{percentage ? 'The number of subscriptions that have been assigned to CSMs (a subscription is worth 20%). Click to toggle to stat in CSMs.' : 'The weighted number of CSMs at full capacity in this region (a CSM has a capacity of 80%). Click to toggle to stat in subscriptions.'}}" data-position="top center">
+								Available<div style="margin-top: -10px;"></div>Capacity <i class="info circle icon"></i>
+							</div>
+						</div>
+					</div>
+					<br />
+					<div data-content="Click to view Overutilized CSMs Report." data-position="top center" class="ui one {{checkStatSize()}} statistics" id="overutilizedStatAP">
+						<a class="ui inverted statistic" ng-click="openOverutilizedCSMReport()">
+							<div class="value">
+								{{asiaPacific.numberOverutilized}}
+							</div>
+							<div class="label" id="statLabel">
+								Overutilized CSMs
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Script for drawing the Radial Graphs -->
+		<script type="text/javascript">
+			var screenWidth;
+			var screenHeight = 600;
+
+			$(document).ready(function () {
+				var rect;
+				if (self==top) {
+					rect = document.body.getBoundingClientRect();
+				} else {
+					rect =  parent.document.body.getBoundingClientRect();
+				}
+
+
+				screenWidth = (rect.width < 960) ? Math.round(rect.width*.95) : Math.round((rect.width - 210) *.95)
+
+				d3.select("#currentDisplay")
+				.attr("item_value", screenWidth + "," + screenHeight)
+				.attr("class", "selected")
+				.html("<a>" + screenWidth + "px - " + screenHeight + "px</a>");
+
+				viz_container = d3.selectAll("#viz_container")
+				.style("width", screenWidth + "px")
+				.style("height", "600px");
+
+				$('.info.circle.icon').popup();
+
+			});
+		</script>
+
+	</body>
+</html>

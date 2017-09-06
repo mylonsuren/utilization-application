@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Overusing Clients Report</title>
+
+		<!-- External Styling -->
+		<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+		<!-- Internal Styling -->
+		<link rel="stylesheet" type="text/css" href="/PDFStyles/GeneralReportStyling.css">
+		<link rel="stylesheet" type="text/css" href="/print.css" media="print">
+
+		<!--Dependencies -->
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+		<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.5.2/randomColor.min.js"></script>
+		<script type="text/javascript" src="https://semantic-ui.com/javascript/library/tablesort.js"></script>
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+
+		<!-- Source Code -->
+		<script type="text/javascript" src="/angularConfig.js"></script>
+		<script type="text/javascript" src="/controllers/navbarController.js"></script>
+
+		<!-- Library -->
+		<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+		<script type="text/javascript" src="/libraries/dates.js"></script>
+		<script type="text/javascript" src="/libraries/query.js"></script>
+		<script type="text/javascript" src="/libraries/load.js"></script>
+
+		<!-- Controller -->
+		<script type="text/javascript" src="/controllers/PDFControllers/OverusingClientsPDFController.js"></script>
+
+	</head>
+
+
+	<body ng-app="CSMApp" ng-controller="OverusingClientsPDFController">
+		<!-- Loader -->
+		<div class="ui {{isLoading ? 'active' : ''}} dimmer">
+			<div class="ui text loader">Creating PDF...</div>
+		</div>
+
+		<!-- Print Menu -->
+		<div class="ui vertical mini labeled icon menu" style="position: fixed; top: 90px;">
+			<a class="item" ng-click="print()">
+				<i class="grey print icon"></i>
+				Print
+			</a>
+		</div>
+
+		<!-- First Page -->
+		<!-- Overusing Clients Graph -->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" style="margin-top: 90px; margin-left: 200px; margin-right: 100px; padding: 60px;" ng-show="overusingClients.length > 0">
+					<h1 class="ui header">
+						Overusing Clients Report
+						<div class="sub header">A report of all overusing clients for {{getMonthandYear()}}</div>
+					</h1>
+					<div id="overUsingClients" ng-show="overusingClients.length > 0"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Second Page -->
+		<!-- Table -->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" style="margin-top: 20px; margin-left: 200px; margin-right: 100px; padding: 60px;" ng-show="overusingClients.length > 0">
+					<h1 class="ui header">
+						Overusing Clients Report
+						<div class="sub header">A report of all overusing clients for {{getMonthandYear()}}</div>
+					</h1>
+
+					<!-- Table Hover Styling -->
+					<style>
+						/*Client Name is bolded on hover*/
+						#clientNameID:hover {
+							font-weight: bold;
+							font-size: 1.3em;
+							color: #34495E;
+						}
+
+						/*CSM Name is bolded on hover*/
+						#csmNameID:hover {
+							font-weight: bold;
+							font-size: 1.3em;
+							color: #34495E;
+						}
+					</style>
+
+					<!-- Table -->
+					<table class="ui five column very compact small selectable celled table">
+						<thead>
+							<tr>
+								<th>Client</th>
+								<th>CSM</th>
+								<th class="center aligned">Overused Amount</th>
+								<th class="center aligned">Purchased</th>
+								<th class="center aligned">Recieved</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="clients in overusingClients | orderBy: 'clientName'">
+								<td ng-click="redirect(clients.accountID)">
+									<h4 class="ui image header" id="clientNameID">
+										<div class="content" >
+											{{clients.clientName}}
+											<div class="sub header">{{clients.clientRegion}}</div>
+										</div>
+									</h4>
+								</td>
+								<td ng-click="relocate(csmList[$index])">
+									<h4 class="ui image header" id="csmNameID">
+										<div class="content">
+											{{csmList[$index].csmName}}
+											<div class="sub header">{{csmList[$index].region}}</div>
+										</div>
+									</h4>
+								</td>
+								<td class="center aligned">
+									<div class="ui tiny red header">
+										{{clients.percentTimeSpent - clients.clientCapacity}}%
+									</div>
+								</td>
+								<td class="center aligned">{{clients.clientCapacity}}%
+								</td>
+								<td class="center aligned">{{clients.percentTimeSpent}}%
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Displays if there are no Overusing Clients -->
+		<div class="ui one cards">
+			<div class="ui raised card" style="padding: 60px; margin-left: 200px; margin-right: 100px; margin-top: 90px; min-height: 500px;" ng-show="overusingClients.length <= 0">
+				<h2 class="ui huge icon header" style="margin-top: 75px;">
+					<i class="building outline icon"></i>
+					No Overusing Clients
+				</h2>
+				<p style="text-align: center;">
+					There are currently no overusing clients.
+				</p>
+			</div>
+		</div>
+		
+	</body>
+</html>

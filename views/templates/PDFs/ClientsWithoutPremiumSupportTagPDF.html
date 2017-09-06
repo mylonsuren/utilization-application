@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Clients Without Premium Support Tag</title>
+
+    <!--External Styling -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+    <!--Internal Styling -->
+    <link rel="stylesheet" type="text/css" href="/PDFStyles/GeneralReportStyling.css">
+    <link rel="stylesheet" type="text/css" href="/print.css" media="print">
+
+
+    <!--Library-->
+    <script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+    <script type="text/javascript" src="/libraries/dates.js"></script>
+    <script type="text/javascript" src="/libraries/query.js"></script>
+
+    <!--Dependencies -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+    <script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+    
+    
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.5.2/randomColor.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+    <script type="text/javascript" src="/angularConfig.js"></script>
+    <script type="text/javascript" src="/controllers/navbarController.js"></script>
+
+    <!--Controller-->
+    <script type="text/javascript" src="/controllers/PDFControllers/ClientsWithoutPremiumSupportTagPDFController.js"></script>
+  </head>
+
+  <!--Print Styling-->
+  <style media="print">
+    /*Removes extra description from printed report*/
+    #extraNonPrint {
+      display: none;
+    }
+  </style>
+
+
+  <body ng-app="CSMApp" ng-controller="ClientsWithoutPremiumSupportTagPDFController">
+    <!--Loader-->
+    <div class="ui {{isLoading ? 'active' : ''}} dimmer">
+      <div class="ui text loader">Fetching Data ...</div>
+    </div>
+
+    <!--Print Menu-->
+    <div class="ui vertical mini labeled icon menu" style="position: fixed; top: 100px;">
+      <a class="item" ng-click="print()">
+        <i class="grey print icon"></i>
+        Print
+      </a>
+    </div>
+
+    <!--Report Page-->
+    <div class="ui one cards">
+      <div class="ui raised card" style="padding: 60px; margin-top: 90px; margin-left: 200px; margin-right: 100px;" ng-show="!isLoading">
+        <div class="ui two column grid">
+          <div class="ui column">
+            <div class="ui large header">
+               Clients Without Premium Support Tag Report
+               <div class="sub header">
+                 The table below shows accounts currently <b>with CSMs</b>, but with <b>no Premium Support Tag</b>. Please go to <a ng-click="goToETA()">ETA</a> and login to add the Premium Support Tag to each account. Once the correct fields have been filled out on ETA, the list below will automatically update.
+               </div>
+               <br />
+               <div class="sub header" id="extraNonPrint">
+                 You can click on the row in the table and it will automatically redirect you to the page where the fields need to be filled out. On the page, click "Adoption Team Members" -> "Account Info" -> "Associated Initiative".
+               </div>
+            </div>
+          </div>
+          <div class="ui column">
+            <div class="ui one statistics">
+              <div class="statistic">
+                <div class="value">
+                  {{results.length}}
+                </div>
+                <div class="label">
+                  Premium Support Accounts without a Premium Support Tag
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br />
+        <br />
+
+        <!--Client Search Dropdown Meny-->
+        <div class="ui three column grid" id="extraNonPrint">
+          <div class="column">
+            <select class="ui search selection dropdown" ng-model="searchClients" id="clientsDropdown">
+              <option value="">Clients</option>
+              <option>All Clients</option>
+              <option ng-repeat="client in results">{{client.clientName}}</option>
+            </select>
+          </div>
+        </div>
+        <br />
+
+        <!--Table of Clients-->
+        <table class="ui very compact selectable small sortable celled table">
+          <thead>
+            <tr>
+              <th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('clientName') ? flipSortOrder(clientTableSortingOrder):'-clientName')" class="center aligned">
+                Client <i ng-show="clientTableSortingOrder.includes('clientName')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i></th>
+              <th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('csm') ? flipSortOrder(clientTableSortingOrder):'-csms[0].name')" class="center aligned">
+                CSMs <i ng-show="clientTableSortingOrder.includes('csm')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i></th>
+              <th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('dateAdded') ? flipSortOrder(clientTableSortingOrder):'-dateAdded')" class="center aligned">
+                Date Added <i ng-show="clientTableSortingOrder.includes('dateAdded')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="result in results | orderBy : clientTableSortingOrder | filter: {clientName: searchClients == 'All Clients' ? '' : searchClients}" ng-click="redirect(result.id)">
+              <td>
+                {{result.clientName}}
+                <div class="ui sub header">
+                  {{result.clientRegion}}
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <div ng-repeat="csm in result.csms">
+                  <i class="user icon"></i>{{csm.name}}
+                </div>
+              </td>
+              <td style="text-align: center;">
+                {{getMonthYearDateFromDate(result.dateAdded)}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Overutilized Geos Report</title>
+
+		<!-- External Styling -->
+		<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+    <!-- Internal Styling -->
+  	<link rel="stylesheet" type="text/css" href="/PDFStyles/OverutilizedCSM.css">
+		<link rel="stylesheet" type="text/css" href="/print.css" media="print" />
+
+    <!--Dependencies -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+    <script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+
+    <!-- source code -->
+    <script type="text/javascript" src="/angularConfig.js"></script>
+    <script type="text/javascript" src="/controllers/navbarController.js"></script>
+
+		<!-- Library -->
+		<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+		<script type="text/javascript" src="/libraries/dates.js"></script>
+		<script type="text/javascript" src="/libraries/query.js"></script>
+		<script type="text/javascript" src="/libraries/load.js"></script>
+
+		<!-- Controller -->
+		<script src="/controllers/PDFControllers/OverutilizedGeographiesPDFController.js"></script>
+
+		<!-- highcharts -->
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+		<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+
+	</head>
+
+
+	<!-- Print Menu -->
+  <div class="ui vertical mini labeled icon menu" style="position: fixed; top: 100px;">
+		<a class="item" ng-click="print()">
+		<i class="grey print icon"></i>
+		Print
+		</a>
+	</div>
+
+	<body ng-app="CSMApp" ng-controller="OverutilizedGeographiesPDFController">
+
+		<!-- Loader -->
+		<div class="ui {{isLoading ? 'active' : ''}} dimmer">
+			<div class="ui text loader">Creating Report...</div>
+		</div>
+
+		<!-- First Page -->
+		<!-- Graph and Overview Table -->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" style="padding: 60px; margin-right: 100px; margin-left: 200px; margin-top: 90px;" ng-show="overutilizedGeos.length > 0">
+					<h1 class="ui header">
+						Overutilized Geos Report
+						<div class="sub header">A report of all overutilized Geos for {{getMonthandYear()}}</div>
+					</h1>
+
+					<!-- Graph -->
+					<div id="overutilizedGeosChart"></div>
+
+					<!-- Table -->
+					<table class="ui very compact celled selectable table">
+						<thead>
+							<tr>
+								<th>Geo</th>
+								<th style="text-align: center;">Utilization</th>
+								<th style="text-align: center;">Assigned</th>
+								<th style="text-align: center;">Capacity</th>
+								<th style="text-align: center;">Contracts</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="geo in overutilizedGeos" ng-click="relocate(geo)">
+								<td>{{geo.name}}</td>
+								<td style="text-align: center;">{{geo.util}}%</td>
+								<td style="text-align: center;">{{geo.assigned}}%</td>
+								<td style="text-align: center;">{{geo.cap}}%</td>
+								<td style="text-align: center;">{{geo.contracts.length}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Rest of Report Pages -->
+		<!-- Individual Geo Overview -->
+		<div ng-repeat="geo in overutilizedGeos | orderBy: '-util'" class="page-break">
+			<div  class="ui one cards">
+				<div  class="ui raised card" style="padding: 60px; margin-right: 100px; margin-left: 200px; margin-top: 20px;" ng-show="overutilizedGeos.length > 0">
+					<h1 class="ui header">
+						Overutilized Geos Report
+						<div class="sub header">A report of all overutilized Geos for {{getMonthandYear()}}</div>
+					</h1>
+					<div class="ui header">
+						{{geo.name}}
+						<div class="ui red inverted tiny header" style="display:inline-block; margin-left: 5px; font-weight: bold;">
+							{{geo.util}}%
+						</div>
+					</div>
+
+					<!-- Table -->
+					<table class="ui small very compact celled sortable selectable table" style="margin-bottom: 40px;">
+						<thead>
+							<tr>
+								<th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('csmName') ? flipSortOrder(csmTableSortingOrder):'-csmName')" class="center aligned">
+									CSM <i ng-show="csmTableSortingOrder.includes('csmName')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('util') ? flipSortOrder(csmTableSortingOrder):'-util')" class="center aligned">
+									Utilization <i ng-show="csmTableSortingOrder.includes('util')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('assigned') ? flipSortOrder(csmTableSortingOrder):'-assigned')" class="center aligned">
+									Assigned <i ng-show="csmTableSortingOrder.includes('assigned')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('workEffort') ? flipSortOrder(csmTableSortingOrder):'-workEffort')" class="center aligned">
+									Work Effort <i ng-show="csmTableSortingOrder.includes('workEffort')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th class="center aligned">Clients</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="csm in geo.csms | orderBy: csmTableSortingOrder" ng-click="relocateCSM(csm)" ng-class="{negative: {{csm.assigned > csm.csmCapacity || csm.workEffort > csm.csmCapacity}}}" >
+								<td>{{csm.csmName}}
+								</td>
+								<td style="text-align: center;">{{csm.util}}%
+								</td>
+								<td style="text-align: center;">{{csm.assigned}}%
+								</td>
+								<td style="text-align: center;">{{csm.workEffort}}%
+								</td>
+								<td>
+									<div ng-repeat="client in csm.clients">
+										<i class="building outline icon"></i>{{client.clientName}} - {{client.totalPurchased}}%
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Displays if there are no overutilized Geos -->
+		<div class="ui one cards">
+			<div class="ui raised card" style="padding: 60px; margin-left: 200px; margin-right: 100px; margin-top: 90px; min-height: 500px;" ng-show="overutilizedGeos.length <= 0">
+				<h2 class="ui huge icon header" style="margin-top: 75px;">
+					<i class="world icon"></i>
+					No Overutilized Geos
+				</h2>
+				<p style="text-align: center;">
+					There are currently no overutilized Geos.
+				</p>
+			</div>
+		</div>
+
+
+	</body>
+</html>

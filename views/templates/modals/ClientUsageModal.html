@@ -1,0 +1,72 @@
+<!-- modal to show reports -->
+
+
+<div class="ui long modal ClientUsageReport">
+	<div class="header">Client Usage Report<div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+	<div class="content">
+		<p>An overview of current clients, and their usage broken down by CSM.</p>
+		<div class="ui {{creatingEvent ? 'active':''}} inverted dimmer">
+			<div class="ui text loader">Loading...</div>
+		</div>
+		<br />
+		<div class="ui three statistics" style="text-align: center;">
+			<div class="statistic">
+				<div class="value">
+					{{avgClientPurchase}}%
+				</div>
+				<div class="label">
+					Avg. Client Purchase
+				</div>
+			</div>
+			<div class="statistic">
+				<div class="value">
+					{{clients.length}}
+				</div>
+				<div class="label">
+					Clients
+				</div>
+			</div>
+			<div class="statistic">
+				<div class="value">
+					{{contracts.length}}
+				</div>
+				<div class="label">
+					Contracts
+				</div>
+			</div>
+		</div>
+		<br />
+		<div class="ui sub header"> Top 5 Clients </div>
+		<div class="ui meta"> By Purchased CSM Support </div>
+		<table class="ui small celled selectable very compact table">
+			<thead>
+				<tr>
+					<th style="text-align:center">Client</th>
+					<th style="text-align:center">Associated CSM's</th>
+					<th style="text-align:center">Amount Purchased</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="client in clients | orderBy: '-totalPurchased' | limitTo: 5" ng-click="redirect(client.accountID)">
+					<td>
+						<h4 class="ui image header">
+							<div class="content">
+								{{client.clientName}}
+								<div class="ui sub header">{{client.clientRegion}}</div>
+							</div>
+						</h4>
+					</td>
+					<td>
+						{{client.associatedCSMS}}
+					</td>
+					<td style="text-align:center">
+						{{client.totalPurchased}}%
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="actions">
+		<button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+	</div>
+</div>

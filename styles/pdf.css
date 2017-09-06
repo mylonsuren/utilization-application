@@ -1,0 +1,39 @@
+html, body {
+	background-color: #ececec;
+}
+
+.ui.raised.card {
+  width: 1000px;
+  height: 1294px;
+  top: 50%;
+  margin-top: 190px;
+  left: 50%;
+  margin-right: -50%;
+  border-radius: 0px;
+  margin-bottom: 20px;
+  transform: translate(-50%, -50%);
+}
+
+.left-sidebar {
+	width: 200px;
+	margin: 15px;
+	position: fixed;
+	top: 11px;
+	left: 50px;
+}
+
+.right-sidebar {
+	width: 200px;
+	margin: 15px;
+	position: fixed;
+	top: 11px;
+	right: 50px;
+}
+
+.footnote {
+	font-size: 12px;
+	position: absolute;
+	bottom: 30px;
+	left: 370px;
+	color: rgba(0,0,0,.6);
+}

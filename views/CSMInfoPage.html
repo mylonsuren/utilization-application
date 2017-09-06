@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<head>
+	<title>CSM Info</title>
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+	<!-- External styling -->
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.19.1/vis.min.css"/>
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css"/>
+
+	<!-- internal styling -->
+	<link rel="stylesheet" type="text/css" href="/PageStyles/CSMInfoPage.css">
+	<link rel="stylesheet" type="text/css" href="/navbar.css">
+
+	<!-- ibm style sheets -->
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/www.css"/>
+
+	<!-- ibm fluid grid  -->
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/grid-fluid.css" />
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css"/>
+
+</head>
+<body ng-app="CSMApp" ng-controller="CSMInfoPageController" ng-init="layout = 'timeline'; clickedOn = 'info';" ng-cloak>
+	<!-- navbar -->
+	<application-navbar></application-navbar>
+
+	<!-- WILL WORK ON THIS LATER, DON'T DELETE YET -->
+	<!-- <div class="ui raised segments popover" id="panel">
+		<div class="ui segment" style="border-radius: 0px;">
+			Data has been updated on ETA.
+		</div>
+		<div class="ui segment" style="border-radius: 0px;">
+			<div class="ui two buttons">
+				<div class="tiny ui basic green button" ng-click="refreshPage()" style="border-radius: 0px;">Refresh</div>
+				<div class="tiny ui basic small red button" ng-click="closePanel()" style="border-radius: 0px;">Close</div>
+			</div>
+		</div>
+	</div> -->
+
+
+	<!-- BACK TO THE TOP BUTTON -->
+	<div class= "ibm-btn-sec ibm-btn-blue-50" ng-click="topFunction()" id="myBtn" tabindex = "0"><i class="angle up icon"></i>Back To Top</div>
+
+	<!-- lead space -->
+	<div id="ibm-leadspace-head" class="ibm-alternate ibm-fluid bluebackground" >
+		<div id="ibm-leadspace-body" class="ibm-padding-top-r2 ibm-padding-bottom-r2" ng-cloak>
+			<div class="ibm-columns">
+				<div class="ibm-col-6-4">
+					<h1 class="ibm-h1 ibm-light ibm-textcolor-white-core" ng-cloak><strong>{{csm.csmName}} </strong></h1>
+					<br />
+
+					<p class="ibm-ind-link" ng-show = "clickedOn === 'info'"><a href="#CurrentCapacityAndUtilization" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link">Current Capacity</a>
+						<a href="#ProjectedCapacity" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link">Projected Capacity</a>
+						<a href="#Engagement" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link">Engagement</a>
+						<a href="#Clients" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link">Clients</a></p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- All encompassing div -->
+		<div class="ibm-fullwidth ibm-background-gray-80 ibm-textcolor-gray-30">
+
+			<!-- INFO SUBMENU BAR -->
+			<div ng-show ="clickedOn === 'info'" ng-cloak>
+				<div class = "ui inverted four item menu">
+					<a class="active item" ng-click="chooseTab('info')">Info</a>
+					<a class = "item" ng-click="chooseTab('executive')">Executive Reporting</a>
+					<a class ="item" ng-click="chooseTab('issue')">Issues</a>
+					<a class="item" ng-click="chooseTab('milestone')">Milestones</a>
+				</div>
+
+				<!-- PAGE DIMMER -->
+				<div class="ui {{isLoading ? 'active' : ''}} page dimmer">
+					<div class="ui text loader">Fetching Data ...</div>
+				</div>
+
+				<!-- INFO PAGE -->
+				<div class= "ibm-fluid">
+					<div class="top-padding"></div>
+
+					<!-- Left Column -->
+					<div class="ibm-col-12-3" ng-cloak>
+
+						<!-- CSM Contact Information-->
+						<div align="left">
+							<h4 class = "ibm-h4">CSM Information </h4>
+							<div class="ibm-rule ibm-alternate"><hr></div>
+							<div align="center">
+								<img src="{{csm.image || '/defaultprofilepic.jpg'}}" class ="ui small circular image" alt ="Jasper Chui" width ="154" height ="154">
+								<div class="summaryContainer">
+									<p ng-show="csm.languages"><i class="comment icon"></i> {{csm.languages}}</p>
+									<div class="btn-group" style="margin: 20px;">
+										<button class="ibm-btn-sec ibm-btn-green-50" ng-click="openForm('add')" style="width: 100%;"><i class="plus icon"></i> Add an Engagement</button>
+										<button class="ibm-btn-sec ibm-btn-blue-50" ng-click="openForm('transfer')" style="width: 100%;"><i class="exchange icon"></i> Transfer an Engagement to Another CSM</button>
+									</div>
+								</div>
+							</div>
+							<br><br>
+						</div>
+
+						<!-- Client List -->
+						<div id="Clients">
+							<h4 id="ClientList" class = "ibm-h4">Current Clients</h4>
+							<div class="ibm-rule ibm-alternate"><hr></div>
+
+							<!-- CURRENT CLIENTS -->
+							<div class="moduleContainer clientList">
+								<div ng-repeat="client in currentClients track by $index" ng-show="currentClients.length" ng-click="library.redirectTOETA(client.accountID)">
+									<a class = "ibm-blocklink ibm-highlight-light ibm-padding-content">
+										<h4 class = "ibm-h4 ibm-textcolor-white-core">{{client.clientName}}</h4>
+										<div>Client Country: {{client.country || "N/A"}} <i class="{{client.country.toLowerCase()}} flag"></i></div>
+										<div>Role: {{client.role || "N/A"}}</div>
+										<div>Capacity: {{client.clientCapacity}}%</div>
+										<div>Work Effort: {{client.percentTimeSpent}}%</div>
+										<div>Start: {{dates.formatDate(client.clientStart, 'MM-YYYY') || ""}}</div>
+										<div>End: {{dates.formatDate(client.clientEnd, 'MM-YYYY') || ""}}</div>
+
+									</a>
+								</div>
+								<div ng-show="!currentClients.length">
+									<h2 class="ui center aligned icon header" style="color: grey;">
+										<i class="suitcase icon"></i>
+										{{csm.csmName}} has no current clients
+									</h2>
+								</div>
+							</div>
+
+							<!-- FUTURE CLIENTS -->
+							<h4 class = "ibm-h4">Future Clients</h4>
+							<div class="ibm-rule ibm-alternate"><hr></div>
+							<div class="moduleContainer clientList">
+								<div ng-repeat="client in futureClients track by $index" ng-show="futureClients.length" ng-click="library.redirectTOETA(client.accountID)">
+									<a class = "ibm-blocklink ibm-highlight-light ibm-padding-content" href = "#">
+										<h4 class = "ibm-h4 ibm-textcolor-white-core">{{client.clientName}}</h4>
+										<div>Client Country: {{client.country || "N/A"}} <i class="{{client.country.toLowerCase()}} flag"></i></div>
+										<div>Role: {{client.role || "N/A"}}</div>
+										<div>Capacity: {{client.clientCapacity}}%</div>
+										<div>Start: {{dates.formatDate(client.clientStart, 'MM-YYYY') || ""}}</div>
+										<div>End: {{dates.formatDate(client.clientEnd, 'MM-YYYY') || ""}}</div>
+
+									</a>
+								</div>
+								<div ng-show="!futureClients.length">
+									<h2 class="ui center aligned icon white header" style="color: grey;">
+										<i class="white suitcase icon" style="color: grey;"></i>
+										{{csm.csmName}} has no upcoming clients
+									</h2>
+								</div>
+							</div>
+
+							<!-- FORMER CLIENTS -->
+							<h4 class = "ibm-h4">Former Clients</h4>
+							<div class="ibm-rule ibm-alternate"><hr></div>
+							<div class="moduleContainer clientList">
+								<div ng-repeat="client in formerClients track by $index" ng-click="library.redirectTOETA(client.accountID)">
+									<a class = "ibm-blocklink ibm-highlight-light ibm-padding-content" href = "#">
+										<h4 class = "ibm-h4 ibm-textcolor-white-core">{{client.clientName}}</h4>
+										<div>Client Country: {{client.country || "N/A"}} <i class="{{client.country.toLowerCase()}} flag"></i></div>
+										<div>Role: {{client.role || "N/A"}}</div>
+										<div>Capacity: {{client.clientCapacity}}%</div>
+										<div>Start: {{dates.formatDate(client.clientStart, 'MM-YYYY') || ""}}</div>
+										<div>End: {{dates.formatDate(client.clientEnd, 'MM-YYYY') || ""}}</div>
+
+									</a>
+								</div>
+								<div ng-show="!formerClients.length">
+									<h2 class="ui center aligned icon white header" style="color: grey;">
+										<i class="white suitcase icon" style="color: grey;"></i>
+										{{csm.csmName}} has not yet completed any engagements
+									</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Utilization AKA middle column -->
+					<div class="ibm-col-12-9" ng-cloak>
+						<!-- current utilization and workload graph -->
+						<div id = "CurrentCapacityAndUtilization">
+							<h4 id="CurrentUtilization" class = "ibm-h4">Current Capacity and Assignment</h4>
+							<div class="ibm-rule ibm-alternate"><hr></div>
+							<h3 ng-cloak>{{csm.csmName}}'s Capacity and Assignments for the Month of {{monthName}}</h3>
+
+							<!-- First Graph on left -->
+							<div class="ibm-col-12-6">
+								<h4 style="text-align: center">Capacity vs. Assignments</h4>
+								<canvas id="CSMBarGraph"
+								tc-chartjs-bar
+								chart-data="barGraph"
+								chart-options="barOptions">
+							</canvas>
+							<h4 class="ui {{assigned > capacity ? 'negative' : 'positive'}} message" style="border-radius: 0px; text-align: center;">
+								<div ng-if="assigned == capacity">At Capacity</div>
+								<div ng-if="assigned > capacity">Over Capacity by: <strong>{{abs(assigned - capacity)}}%</strong></div>
+								<div ng-if="assigned < capacity">Under Capacity by: <strong>{{abs(assigned - capacity)}}%</strong></div>
+							</h4>
+							<h4 class="ui {{workEffort > capacity ? 'negative' : 'positive'}} message" style="border-radius: 0px; text-align: center;">
+								<div ng-if="workEffort == capacity">Fully Worked</div>
+								<div ng-if="workEffort > capacity">Over Worked by: <strong>{{abs(workEffort - capacity)}}%</strong></div>
+								<div ng-if="workEffort < capacity">Under Worked by: <strong>{{abs(workEffort- capacity)}}%</strong></div>
+							</h4>
+
+						</div>
+
+
+						<!-- Second Graph on Right -->
+						<div class="ibm-col-12-6">
+							<div ng-show="currentClients.length > 2">
+								<h4 style="text-align: center">Assignment Breakdown</h4>
+								<canvas id="CSMRadarGraph"
+								tc-chartjs-radar
+								chart-data="radarGraph"
+								chart-options="radarOptions">
+							</canvas>
+						</div>
+						<div ng-show="currentClients.length <= 2" id="barGraph">
+							<h4 style="text-align: center">Assignment Breakdown</h4>
+							<canvas id="CSMBarGraphBreakdown"
+							tc-chartjs-bar
+							chart-data="engagementsBarGraph"
+							chart-options="barOptions">
+						</canvas>
+					</div>
+				</div>
+			</div>
+			<br><br>
+
+
+			<!-- Next Section -->
+			<div ng-cloak>
+				<!-- projected utilization and workload graph AKA TIMELINE-->
+				<div id = "ProjectedCapacity">
+					<div class = "top-padding"></div>
+					<h4 id="ProjectedUtilization" class = "ibm-h4">Projected Capacity and Assignments</h4>
+					<div class="ibm-rule ibm-alternate"><hr></div>
+					<div>
+						<div class="moduleContainer">
+							<div class="btn-group ibm-fright" id="graph-list-toggle">
+								<button type="button" class="ibm-btn-sec ibm-btn-blue-50" ng-click="selectedView = 'Graph'">Graph</button>
+								<button type="button" class="ibm-btn-sec ibm-btn-blue-50" ng-click="selectedView = 'Numerical'">Numerical</button>
+							</div>
+							<div class = "top-padding"></div>
+							<div>
+								<canvas id="CSMLineGraph"
+								ng-show="selectedView == 'Graph'"
+								tc-chartjs-line
+								chart-data="lineGraph"
+								chart-options="lineOptions">
+							</canvas>
+							<table class="ui inverted selectable table" ng-show="selectedView == 'Numerical'" id="CSMUtilizationTable" ng-cloak>
+								<thead>
+									<tr>
+										<th>{{timeDivision}}</th>
+										<th>Capacity (%)</th>
+										<th>Assignment (%)</th>
+										<th>Percent Utilization (%)</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="division in xAxisLabels[timeDivision] track by $index">
+										<td>{{division}}</td>
+										<td>{{capacityValues[$index]}}</td>
+										<td>{{assignedValues[$index]}}</td>
+										<td>{{library.calculatePercent(assignedValues[$index],capacityValues[$index], 2)}}</td>
+									</tr>
+								</table>
+							</div>
+							<div class="btn-group" id="graph-list-toggle">
+								<button class="ibm-btn-sec ibm-btn-blue-50" ng-click="moveGraph('backward')"><i class="chevron left icon"></i> Back</button>
+								<button class="ibm-btn-sec ibm-btn-blue-50" ng-click="moveGraph('forward')">Forward <i class="chevron right icon"></i> </button>
+							</div>
+							<div class="btn-group" id="month-quarter-toggle">
+								<button type="button" class="ibm-btn-sec ibm-btn-blue-50" ng-click="changeTimeDivision('Month')">Month</button>
+								<button type="button" class="ibm-btn-sec ibm-btn-blue-50" ng-click="changeTimeDivision('Quarter')">Quarter</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br><br><br /><br />
+
+
+				<!-- contracts timeline -->
+				<div id = "Engagement">
+					<h4 id="Timeline" class = "ibm-h4">Engagements</h4>
+					<div class="ibm-rule ibm-alternate"><hr></div>
+					<div class="moduleContainer timelineContainer">
+						<div id='timeline'></div> <!-- timeline gets inserted here based on code from controller -->
+						<div class="btn-group">
+							<button class="ibm-btn-sec ibm-btn-green-50" ng-click="openForm('add')"><i class="plus icon"></i> Add an Engagement</button>
+							<button class="ibm-btn-sec ibm-btn-blue-50" ng-click="openForm('transfer')"><i class="exchange icon"></i> Transfer an Engagement to Another CSM</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br><br>
+
+			<div class="ui fullscreen modal add">
+				<div class="header">New Engagement <div class="circle ibm-fright" ng-click="closeForm()"><i class="close icon ibm-fright"></i></div></div>
+				<div class="content">
+
+					<!-- iframe will be used if we cannot do POST requests -->
+					To add an engagement, select a client:
+					<br />
+					<br />
+
+					<form class="ui form" name="contractForm" style="margin-bottom: 20px;">
+						<div class="field">
+							<label style="font-size: 14px;">Client Name <span class="required">*</span></label>
+							<div class="ui fluid search selection dropdown" style="border-radius: 0px;">
+								<input type="hidden" name="clients" />
+								<i class="dropdown icon"></i>
+								<div class="default text">Select Client</div>
+								<div class="menu">
+									<div class="item" ng-repeat="client in allClients track by $index" ng-click="loadETA(client._id)">{{client.name}}</div>
+								</div>
+							</div>
+						</div>
+					</form>
+
+					<ol>
+						<li>Click on the <em>Adoption Team Members</em> dropdown</li>
+						<li>Click on the <em>CSM Information</em> dropdown </li>
+						<li>Click the <i class="green plus icon"></i> to add a new CSM</li>
+						<li>Select {{csm.csmName}}'s name and <strong>fill in all</strong> of the fields in the row</li>
+						<li><strong>Click update at the bottom of the page</strong> to add the information</li>
+					</ol>
+
+					<span ng-show="loadingETA" style="font-size: 24px;">Loading ETA ...</span>
+
+					<iframe id="add" src="" style="width: 100%; height: 1000px;"></iframe>
+
+				</div>
+				<div class="actions">
+					<button class="ibm-btn-sec ibm-btn-green-50">Finish</button>
+					<button class="ibm-btn-sec ibm-btn-red-50" ng-click="closeForm()">Cancel</button>
+
+				</div>
+			</div>
+
+			<div class="ui fullscreen modal transfer">
+				<div class="header">Transfer Engagement <div class="circle ibm-fright" ng-click="closeForm()"><i class="close icon ibm-fright"></i></div></div>
+				<div class="content">
+
+					<!-- iframe will be used if we cannot do POST requests -->
+					To transfer an engagement to another CSM, select one of {{csm.csmName}}'s current engagements:
+					<br />
+					<br />
+
+					<form class="ui form" name="contractForm" style="margin-bottom: 20px;">
+						<div class="field">
+							<label style="font-size: 14px;">Client Name <span class="required">*</span></label>
+							<div class="ui fluid search selection dropdown" style="border-radius: 0px;">
+								<input type="hidden" name="clients" />
+								<i class="dropdown icon"></i>
+								<div class="default text">Select Client</div>
+								<div class="menu">
+									<div class="item" ng-repeat="client in currentClientsNoRepeats track by $index" ng-click="loadETA(client._id)">{{client.clientName}}</div>
+								</div>
+							</div>
+						</div>
+					</form>
+
+					<ol>
+						<li>Click on the <em>Adoption Team Members</em> dropdown</li>
+						<li>Click on the <em>CSM Information</em> dropdown </li>
+						<li>Click the <i class="blue edit icon"></i> beside {{csm.csmName}}'s name</li>
+						<li>Change {{csm.csmName}}'s <em>CSM Exit</em> to the transfer date</li>
+						<li>Change {{csm.csmName}}'s <em>Status</em> to <strong>Completed</strong></li>
+						<li>Click the <i class="green plus icon"></i> button</li>
+						<li>Click the <i class="green plus icon"></i> button again and set the field names of the new CSM, where the CSM On-board is the transfer date</li>
+						<li><strong>Click update at the bottom of the page</strong> to update the information</li>
+					</ol>
+
+					<span ng-show="loadingETA" style="font-size: 24px;">Loading ETA ...</span>
+
+					<iframe id="transfer" src="" style="width: 100%; height: 1000px;"></iframe>
+
+				</div>
+				<div class="actions">
+					<button class="ibm-btn-sec ibm-btn-green-50">Finish</button>
+					<button class="ibm-btn-sec ibm-btn-red-50" ng-click="closeForm()">Cancel</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+
+
+	<!-- MILESTONES -->
+
+	<div ng-show="clickedOn === 'milestone'" ng-cloak>
+
+		<!-- SUBMENU -->
+		<div class = "ui inverted four item menu">
+			<a class="item" ng-click="chooseTab('info')">Info</a>
+			<a class = "item" ng-click="chooseTab('executive')">Executive Reporting</a>
+			<a class ="item" ng-click="chooseTab('issue')">Issues</a>
+			<a class="active item" ng-click="chooseTab('milestone')">Milestones</a>
+		</div>
+
+
+		<div class= "ibm-fluid ibm-background-gray-80" id = "milestone">
+
+			<div class="top-padding"></div>
+			<div ng-show = "totalMilestones.length">
+				<div class = "ui four cards">
+
+					<div id ="red-card" class ="red fluid card">
+						<div class = "content">
+							<div class = "ui red header">Milestones Red</div>
+							<div class="description">
+								<p></p>
+							</div>
+							<div ng-show ="redMilestones.length">
+								<div id = "card1" class = "ui black fluid raised card" ng-repeat="milestone in redMilestones | orderBy: 'milestoneTargetDate'">
+									<div class = "content">
+										<div class = "header">{{milestone.clientName}}</div>
+										<div class = "meta">
+											<span class = "category">{{milestone.milestoneTargetDate.split('T')[0]}}</span>
+										</div>
+										<div class="description">
+											<p>{{milestone.milestoneDescription}}</p>
+										</div>
+										<div class="extra content">
+											{{milestone.milestoneStatus}}
+										</div>
+									</div>
+								</div>
+							</div>
+							<div ng-show ="!redMilestones.length">
+								<h2 class="ui grey center aligned icon header">
+									<i class="grey suitcase icon"></i>
+									{{csm.csmName}} has no Red Milestones
+								</h2>
+							</div>
+						</div>
+					</div>
+
+
+					<div id = "yellow-card" class ="yellow fluid card">
+						<div class = "content">
+							<div class = "ui yellow header">Milestones Yellow</div>
+							<div class="description">
+								<p></p>
+							</div>
+							<div ng-show ="yellowMilestones.length">
+								<div id = "card1" class = "ui black fluid raised card" ng-repeat="milestone in yellowMilestones | orderBy: 'milestoneTargetDate'">
+									<div class = "content">
+										<div class = "header">{{milestone.clientName}}</div>
+										<div class = "meta">
+											<span class = "category">{{milestone.milestoneTargetDate.split('T')[0]}}</span>
+										</div>
+										<div class="description">
+											<p>{{milestone.milestoneDescription}}</p>
+										</div>
+										<div class="extra content">
+											{{milestone.milestoneStatus}}
+										</div>
+									</div>
+								</div>
+							</div>
+							<div ng-show ="!yellowMilestones.length">
+								<h2 class="ui grey center aligned icon header">
+									<i class="grey suitcase icon"></i>
+									{{csm.csmName}} has no Yellow Milestones
+								</h2>
+							</div>
+
+						</div>
+					</div>
+
+					<div id = "green-card" class ="green fluid card">
+						<div class = "content">
+							<div class = "ui green header">Milestones Green</div>
+							<div class="description">
+								<p></p>
+							</div>
+							<div ng-show ="greenMilestones.length">
+								<div id = "card1" class = "ui black fluid raised card" ng-repeat="milestone in greenMilestones | orderBy: 'milestoneTargetDate'">
+									<div class = "content">
+										<div class = "header">{{milestone.clientName}}</div>
+										<div class = "meta">
+											<span class = "category">{{milestone.milestoneTargetDate.split('T')[0]}}</span>
+										</div>
+										<div class="description">
+											<p>{{milestone.milestoneDescription}}</p>
+										</div>
+										<div class="extra content">
+											{{milestone.milestoneStatus}}
+										</div>
+									</div>
+								</div>
+							</div>
+							<div ng-show ="!greenMilestones.length">
+								<h2 class="ui center grey aligned icon header">
+									<i class=" grey suitcase icon"></i>
+									{{csm.csmName}} has no green Milestones
+								</h2>
+							</div>
+						</div>
+					</div>
+
+					<div id = "blue-card" class ="blue fluid card">
+						<div class = "content">
+							<div class = "ui blue header">Milestones Blue</div>
+							<div class="description">
+								<p></p>
+							</div>
+							<div ng-show ="blueMilestones.length">
+								<div id = "card1" class = "ui black fluid raised card" ng-repeat="milestone in blueMilestones | orderBy: 'milestoneTargetDate'">
+									<div class = "content">
+										<div class = "header">{{milestone.clientName}}</div>
+										<div class = "meta">
+											<span class = "category">{{milestone.milestoneTargetDate.split('T')[0]}}</span>
+										</div>
+										<div class="description">
+											<p>{{milestone.milestoneDescription}}</p>
+										</div>
+										<div class="extra content">
+											{{milestone.milestoneStatus}}
+										</div>
+									</div>
+								</div>
+							</div>
+							<div ng-show ="!blueMilestones.length">
+								<h2 class="ui center aligned grey icon header">
+									<i class="grey suitcase icon"></i>
+									{{csm.csmName}} has no blue Milestones
+								</h2>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+			<div ng-show = "!totalMilestones.length">
+				<h2 class="ui center aligned grey icon header">
+					<i class="grey suitcase icon"></i>
+					{{csm.csmName}} has no Milestones
+				</h2>
+			</div>
+		</div>
+	</div>
+
+	<!-- ISSUES SECTION -->
+	<div ng-show="clickedOn === 'issue'" ng-cloak>
+		<div class = "ui inverted four item menu">
+			<a class="item" ng-click="chooseTab('info')">Info</a>
+			<a class = "item" ng-click="chooseTab('executive')">Executive Reporting</a>
+			<a class ="active item" ng-click="chooseTab('issue')">Issues</a>
+			<a class="item" ng-click="chooseTab('milestone')">Milestones</a>
+		</div>
+		<div ng-show="issues.length" ng-init = "issueChoice = 'open'" id = "issue-container">
+
+			<div ng-show = "issueChoice === 'open'" class = "ui grid container">
+				<div class = "four wide column">
+					<div class="ui inverted vertical menu">
+						<a class="active blue item" ng-click ="chooseIssue('open')">
+							Open Issues
+						</a>
+						<a class="item" ng-click ="chooseIssue('closed')">
+							Closed Issues
+						</a>
+						<a class="item" ng-click ="chooseIssue('accomplishment')">
+							Accomplishments
+						</a>
+					</div>
+				</div>
+
+				<div class = "twelve wide column">
+					<div ng-show = "openIssues.length">
+						<table class="ui selectable inverted single line table">
+							<thead class="full-width">
+								<tr>
+									<th colspan = "6">Open Issues</th>
+								</tr>
+								<tr>
+									<th>Title</th>
+									<th></th>
+									<th>Client</th>
+									<th>Status</th>
+									<th>Owner</th>
+									<th>Target Date</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="issue in openIssues | orderBy: 'issueTargetDate'">
+									<td><i class="warning sign icon"></i>{{issue.issueTitle}}</td>
+									<td></td>
+									<td>{{issue.clientName}}</td>
+									<td>{{issue.issueStatus}}</td>
+									<td>{{issue.issueOwner}}</td>
+									<td>{{issue.issueTargetDate.split('T')[0]}}</td>
+								</tr>
+
+							</tbody>
+							<tfoot class="full-width">
+								<tr>
+									<th></th>
+									<th colspan="6">
+									</th>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+					<div ng-show ="!openIssues.length">
+						<h2 class="ui center aligned icon white header" style="color: grey;">
+							<i class="white suitcase icon" style="color: grey;"></i>
+							{{csm.csmName}} has no current issues
+						</h2>
+					</div>
+				</div>
+			</div>
+
+
+			<div ng-show = "issueChoice === 'closed'" class = "ui grid container">
+				<div class = "four wide column">
+					<div class="ui inverted vertical menu">
+						<a class="item" ng-click ="chooseIssue('open')">
+							Open Issues
+						</a>
+						<a class="active blue item" ng-click ="chooseIssue('closed')">
+							Closed Issues
+						</a>
+						<a class="item" ng-click ="chooseIssue('accomplishment')">
+							Accomplishments
+						</a>
+					</div>
+				</div>
+
+				<div class = "twelve wide column">
+					<div ng-show = "closedIssues.length">
+						<table class="ui selectable inverted single line table">
+							<thead class="full-width">
+								<tr>
+									<th colspan = "6">Closed Issues</th>
+								</tr>
+								<tr>
+									<th>Title</th>
+									<th>Client</th>
+									<th>Status</th>
+									<th>Owner</th>
+									<th>Resolution</th>
+									<th>Target Date</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="issue in closedIssues | orderBy: 'issueTargetDate'">
+									<td><i class="warning sign icon"></i>{{issue.issueTitle}}</td>
+									<td>{{issue.clientName}}</td>
+									<td>{{issue.issueStatus}}</td>
+									<td>{{issue.issueOwner}}</td>
+									<td>{{issue.issueResolution}}</td>
+									<td>{{issue.issueTargetDate.split('T')[0]}}</td>
+								</tr>
+
+							</tbody>
+							<tfoot class="full-width">
+								<tr>
+									<th></th>
+									<th colspan="6">
+									</th>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+					<div ng-show ="!closedIssues.length">
+						<h2 class="ui center aligned icon white header" style="color: grey;">
+							<i class="white suitcase icon" style="color: grey;"></i>
+							{{csm.csmName}} has no current issues
+						</h2>
+					</div>
+				</div>
+			</div>
+
+			<div ng-show = "issueChoice === 'accomplishment'" class = "ui grid container">
+				<div class = "four wide column">
+					<div class="ui inverted vertical menu">
+						<a class="item" ng-click ="chooseIssue('open')">
+							Open Issues
+						</a>
+						<a class="item" ng-click ="chooseIssue('closed')">
+							Closed Issues
+						</a>
+						<a class="active blue item" ng-click ="chooseIssue('accomplishment')">
+							Accomplishments
+						</a>
+					</div>
+				</div>
+
+				<div class = "twelve wide column">
+					<div ng-show = "accomplishmentIssues.length">
+						<table class="ui selectable inverted single line table">
+							<thead class="full-width">
+								<tr>
+									<th colspan = "6">Accomplishments</th>
+								</tr>
+								<tr>
+									<th>Title</th>
+									<th>Client</th>
+									<th>Status</th>
+									<th>Owner</th>
+									<th>Resolution</th>
+									<th>Target Date</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="issue in accomplishmentIssues | orderBy: 'issueTargetDate'">
+									<td><i class="warning sign icon"></i>{{issue.issueTitle}}</td>
+									<td>{{issue.clientName}}</td>
+									<td>{{issue.issueStatus}}</td>
+									<td>{{issue.issueOwner}}</td>
+									<td>{{issue.issueResolution}}</td>
+									<td>{{issue.issueTargetDate.split('T')[0]}}</td>
+								</tr>
+
+							</tbody>
+							<tfoot class="full-width">
+								<tr>
+									<th></th>
+									<th colspan="6">
+									</th>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+					<div ng-show ="!accomplishmentIssues.length">
+						<h2 class="ui center aligned icon white header" style="color: grey;">
+							<i class="white suitcase icon" style="color: grey;"></i>
+							{{csm.csmName}} has no current issues
+						</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div ng-show ="!issues.length">
+			<h2 class="ui center aligned icon white header" style="color: grey;">
+				<i class="white suitcase icon" style="color: grey;"></i>
+				{{csm.csmName}} has no current issues
+			</h2>
+		</div>
+	</div>
+
+
+	<!-- EXECUTIVE REPORTING SECTION -->
+	<div ng-show = "clickedOn === 'executive'" ng-cloak class = "ibm-background-gray-80">
+		<div class = "ui inverted four item menu">
+			<a class="item" ng-click="chooseTab('info')">Info</a>
+			<a class = "active item" ng-click="chooseTab('executive')">Executive Reporting</a>
+			<a class ="item" ng-click="chooseTab('issue')">Issues</a>
+			<a class=" item" ng-click="chooseTab('milestone')">Milestones</a>
+		</div>
+
+		<div class = "ui container" id ="reporting">
+			<div class ="ui segments" ng-repeat="report in reporting track by $index">
+				<div class= "ui raised segment">
+					<h2 class = "ui header">{{report.clientName}}</h2>
+					<h5 class = "ui header">Project Summary</h5>
+					<div class = "content" style ="color: black">{{report.projectSummary}}</div>
+				</div>
+				<div class= "ui raised segment">
+					<h5 class ="ui header">Goals</h5>
+					<div class = "content" style ="color: black">{{report.goals}}</div>
+				</div>
+				<div class= "ui raised segment">
+					<h5 class="ui header">Next Steps</h5>
+					<div class = "content" style ="color: black">{{report.nextSteps}}</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+
+	</div>
+	<script src = "https://1.www.s81c.com/common/stats/ida_stats.js"></script>
+	<script src = "https://1.www.s81c.com/common/v18/js/www.js"></script>
+	<script src = "https://1.www.s81c.com/common/v18/js/tables.js"></script>
+	<script src = "https://1.www.s81c.com/common/v18/js/dyntabs.js"></script>
+
+	<!--dependencies -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.19.1/vis.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script> <!-- angular charts -->
+	<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+
+
+
+	<!-- source files code -->
+	<script type="text/javascript" src="/angularConfig.js"></script>
+
+	<script type="text/javascript" src="/controllers/navbarController.js"></script>
+	<script type="text/javascript" src="/controllers/pageControllers/CSMInfoPageController.js"></script>
+
+	<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+	<script type="text/javascript" src="/libraries/dates.js"></script>
+	<script type="text/javascript" src="/libraries/query.js"></script>
+	<script type="text/javascript" src="/libraries/load.js"></script>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+</body>

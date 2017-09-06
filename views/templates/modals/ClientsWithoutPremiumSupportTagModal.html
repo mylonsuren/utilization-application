@@ -1,0 +1,72 @@
+<!-- modal to show reports -->
+
+
+<div class="ui long modal ClientsWithoutPremiumSupportTagReport">
+	<div class="header">Clients Without Premium Support Tag Report<div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+	<div class="content">
+		<p>View a summary of clients with CSM engagements, but no premium support tag
+			<button style="display: inline-block; margin-bottom: 10px;" class="ui right floated button" ng-click="viewPDFPremiumSupportTag()" ng-show="premSupportTagClients.length > 0">View More ({{viewMoreButtonPremSupport(premSupportTagClients)}})</button>
+		</p>
+
+		<div class="ui {{isLoading ? 'active':''}} inverted dimmer">
+			<div class="ui text loader">Loading</div>
+		</div>
+
+		<style>
+			#clientTitle:hover {
+				color: #273746;
+				text-decoration: none;
+				font-weight: bold;
+			}
+		</style>
+
+		<table class="ui very compact selectable small celled table" ng-show="premSupportTagClients.length > 0">
+			<thead>
+				<tr>
+					<th class="center aligned">
+						Client
+					</th>
+					<th class="center aligned">
+						CSMs
+					</th>
+					<th class="center aligned">
+						Date Added
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="result in premSupportTagClients |limitTo: 5" ng-click="redirect(result.id)">
+					<td>
+						{{result.clientName}}
+						<div class="ui sub header">
+							{{result.clientRegion}}
+						</div>
+					</td>
+					<td style="text-align: center;">
+
+						<div ng-repeat="csm in result.csms">
+							<i class="user icon"></i>{{csm.name}}
+						</div>
+					</td>
+					<td style="text-align: center;">
+						{{getMonthYearDateFromDate(result.dateAdded)}}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="center aligned">
+			<h2 class="ui huge icon header center aligned" style="margin-top: 75px;" ng-show="premSupportTagClients.length <= 0">
+				<i class="building outline icon"></i>
+				No Clients Without a Premium Support Tag
+			</h2>
+			<p style="text-align: center;" ng-show="premSupportTagClients.length <= 0">
+				There are currently no clients without a premium support tag
+			</p>
+		</div>
+
+	</div>
+	<div class="actions">
+		<button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+	</div>
+</div>

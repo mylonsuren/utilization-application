@@ -1,0 +1,73 @@
+.ui.mini.statistic {
+  margin-right: 10px;
+}
+
+.left-sidebar {
+	width: 200px;
+	margin: 15px;
+	position: fixed;
+	top: 11px;
+	left: 50px;
+}
+
+.right-sidebar {
+	width: 200px;
+	margin: 15px;
+	position: fixed;
+	top: 11px;
+	right: 50px;
+}
+
+html, body {
+	background-color: #ececec;
+}
+
+#header {
+  text-align: center;
+  margin-top: 100px
+}
+
+/*STATISTICS*/
+#statistics {
+  margin-left: 88.24px;
+  margin-right: 108.24px;
+}
+#contracts {
+  margin-left: 98.24;
+}
+#clients{
+  margin-left: 205px;
+}
+
+#csms {
+  margin-right: 108.24;
+  float: right;
+}
+
+/*CLIENT LIST*/
+#list {
+  margin-top: 30px;
+  column-count: 4;
+  margin-left: 98.24px;
+  margin-right: 28.24px;
+}
+
+/*GRAPHS AND LABELS*/
+#geoPieChart {
+  float: left;
+  width: calc(35vw);
+}
+
+#graphLabel1 {
+  float: right;
+  margin-top: 200px;
+  margin-right: 138.24px;
+  margin-bottom: 200px;
+}
+
+#graphLabel2 {
+  float: left;
+  margin-top: 150px;
+  margin-left: 138.24px;
+  margin-right: 0px;
+}

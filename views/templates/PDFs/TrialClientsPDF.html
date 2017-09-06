@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Trial Clients Report</title>
+
+		<!-- External Styling -->
+		<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+    <!-- Internal Styling -->
+  	<link rel="stylesheet" type="text/css" href="/PDFStyles/TrialClientsPDF.css">
+  	<link rel="stylesheet" type="text/css" href="/print.css" media="print" />
+
+    <!-- Dependencies -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+    <script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+
+    <!-- source code -->
+    <script type="text/javascript" src="/angularConfig.js"></script>
+    <script type="text/javascript" src="/controllers/navbarController.js"></script>
+
+		<!-- Library -->
+		<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+		<script type="text/javascript" src="/libraries/dates.js"></script>
+		<script type="text/javascript" src="/libraries/query.js"></script>
+		<script type="text/javascript" src="/libraries/load.js"></script>
+
+		<!-- Controller -->
+		<script type="text/javascript" src="/controllers/PDFControllers/TrialClientsPDFController.js"></script>
+
+		<!-- highcharts -->
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+		<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+	</head>
+
+
+	<body ng-app="CSMApp" ng-controller="TrialClientsPDFController">
+
+		<!-- Loader -->
+		<div class="ui {{isLoading ? 'active' : ''}} dimmer">
+			<div class="ui text loader">Fetching Data ...</div>
+		</div>
+
+		<!-- Print Menu -->
+		<div class="ui vertical mini labeled icon menu" style="position: fixed; top: 90px;">
+			<a class="item" ng-click="print()">
+				<i class="grey print icon"></i>
+				Print
+			</a>
+		</div>
+
+		<!-- Displays if there no trial clients -->
+		<div class="ui one cards">
+			<div class="ui raised card" style="padding: 60px; margin-left: 200px; margin-right: 100px; margin-top: 90px; min-height: 500px;" ng-show="trialAccounts.length <= 0">
+				<h2 class="ui huge icon header" style="margin-top: 75px;">
+					<i class="building outline icon"></i>
+					No Trial Clients
+				</h2>
+				<p style="text-align: center;">
+					There are currently no trial clients.
+				</p>
+			</div>
+		</div>
+
+		<!-- First Page -->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" style="padding: 60px; margin-top: 90px; margin-left: 200px; margin-right: 100px;" ng-show="trialAccounts.length > 0">
+					<div class="ui two column grid">
+						<div class="ui middle aligned column">
+							<div class="ui large header">
+								TRIAL CLIENTS REPORT
+								<div class="sub header">
+									An overview of all clients currently on a trial account.
+								</div>
+							</div>
+						</div>
+						<div class="ui middle aligned column">
+							<div class="ui three statistics">
+								<div class="ui small statistic">
+									<div class="value">
+										{{round(percentageOfCurrentCapacity*100,2)}}%
+									</div>
+									<div class="label">
+										% of Current Capacity
+									</div>
+								</div>
+								<div class="ui small statistic">
+									<div class="value">
+										{{trialAccountClients.length}}
+									</div>
+									<div class="label">
+										Trial Clients
+									</div>
+								</div>
+								<div class="ui small statistic">
+									<div class="value">
+										{{trialAccounts.length}}
+									</div>
+									<div class="label">
+										Trial Contracts
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<br />
+					<table class="ui very compact selectable celled table">
+						<thead>
+							<tr>
+								<th style="text-align:center;">Client</th>
+								<th style="text-align:center;">Number of Contracts</th>
+								<th style="text-align:center;">Associated CSM's</th>
+								<th style="text-align:center;">Amount Purchased</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="client in trialAccountClients | orderBy: 'clientName'" ng-click="">
+								<td>
+									<h4 class="ui image header">
+										<div class="content">
+											{{client.clientName}}
+											<div class="sub header">{{client.clientRegion}}</div>
+										</div>
+									</h4>
+								</td>
+								<td style="text-align:center;">{{client.numberOfContracts}}</td>
+								<td>{{client.associatedCSMS}}</td>
+								<td style="text-align:center;">{{client.totalPurchased}}%</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Second Page -->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" style="padding: 60px; margin-top: 20px; margin-left: 200px; margin-right: 100px;" ng-show="trialAccounts.length > 0">
+					<div class="ui two column grid">
+						<div class="ui middle aligned column">
+							<div class="ui large header">
+								TRIAL CLIENTS REPORT
+								<div class="sub header">
+									An overview of all clients currently on a trial account.
+								</div>
+							</div>
+						</div>
+						<div class="ui middle aligned column">
+							<div class="ui three statistics">
+								<div class="ui small statistic">
+									<div class="value">
+										{{round(percentageOfCurrentCapacity*100,2)}}%
+									</div>
+									<div class="label">
+										% of Current Capacity
+									</div>
+								</div>
+								<div class="ui small statistic">
+									<div class="value">
+										{{trialAccountClients.length}}
+									</div>
+									<div class="label">
+										Trial Clients
+									</div>
+								</div>
+								<div class="ui small statistic">
+									<div class="value">
+										{{trialAccounts.length}}
+									</div>
+									<div class="label">
+										Trial Contracts
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<br />
+					<div class="ui two column grid">
+						<div class="column">
+							<div class="ui header">
+								Contracts by Geo
+							</div>
+							<div id="geoPieChart"></div>
+						</div>
+						<div class="ui middle aligned column">
+							<table class="ui very compact structured selectable celled table">
+								<thead>
+									<tr>
+										<th style="text-align:center;">Geo</th>
+										<th style="text-align:center;">Number of Contracts</th>
+										<th style="text-align:center;">% of Geo Current Capacity</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="geo in geosTrialAccounts" ng-click="">
+										<td>
+											{{geo.name}}
+										</td>
+										<td style="text-align:center;">{{geo.accounts.length}}</td>
+										<td style="text-align:center;">{{round(geo.percentage*100,2)}}%</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Third Page -->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card" style="padding: 60px; margin-top: 20px; margin-left: 200px; margin-right: 100px; margin-bottom: 90px;" ng-show="trialAccounts.length > 0">
+					<div class="ui two column grid">
+						<div class="ui middle aligned column">
+							<div class="ui large header">
+								Converted Trial Accounts
+								<div class="sub header">
+									An overview of clients who transferred from Trial Contracts to Paid Contracts.
+								</div>
+							</div>
+						</div>
+						<div class="ui middle aligned column">
+							<div class="ui two statistics">
+								<div class="ui small statistic">
+									<div class="value">
+										{{convertedAccounts.length}}
+									</div>
+									<div class="label">
+										Current Converted Clients
+									</div>
+								</div>
+								<div class="ui small statistic">
+									<div class="value">
+										{{totalTrialConversion.length}}
+									</div>
+									<div class="label">
+										Total Converted Clients
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<br />
+					<br />
+					<table class="ui very compact selectable sortable celled table">
+						<thead>
+							<tr>
+								<th style="text-align:center;" ng-click="totalConvertedOrder = (totalConvertedOrder.includes('clientName') ? flipSortOrder(totalConvertedOrder):'-clientName')">
+									Client <i ng-show="totalConvertedOrder.includes('clientName')" class="caret {{totalConvertedOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th style="text-align:center;" ng-click="totalConvertedOrder = (totalConvertedOrder.includes('trialCap') ? flipSortOrder(totalConvertedOrder):'-trialCap')">
+									Trial Amount <i ng-show="totalConvertedOrder.includes('trialCap')" class="caret {{totalConvertedOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th style="text-align:center;"ng-click="totalConvertedOrder = (totalConvertedOrder.includes('trialCSMs') ? flipSortOrder(totalConvertedOrder):'-trialCSMs[0].name')">
+									Trial CSMs <i ng-show="totalConvertedOrder.includes('trialCSMs')" class="caret {{totalConvertedOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th style="text-align:center;"ng-click="totalConvertedOrder = (totalConvertedOrder.includes('premiumCap') ? flipSortOrder(totalConvertedOrder):'-premiumCap')">
+									Paid Amount <i ng-show="totalConvertedOrder.includes('premiumCap')" class="caret {{totalConvertedOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th style="text-align:center;"ng-click="totalConvertedOrder = (totalConvertedOrder.includes('premiumCSMs[0].name') ? flipSortOrder(totalConvertedOrder):'-premiumCSMs[0].name')">
+									Paid CSMs <i ng-show="totalConvertedOrder.includes('premiumCSMs[0].name')" class="caret {{totalConvertedOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="client in totalTrialConversion | orderBy: totalConvertedOrder" ng-click="">
+								<td>
+									<h4 class="ui image header">
+										<div class="content">
+											{{client.clientName}}
+										</div>
+									</h4>
+								</td>
+								<td style="text-align:center;">{{client.trialCap}}%</td>
+								<td>
+									<div ng-repeat="csm in client.trialCSMs">
+										<i class="user icon"></i>
+										{{csm.name}}
+										&nbsp
+										({{getMonthYearDateFromDate(csm.start)}}  -  {{getMonthYearDateFromDate(csm.end)}})
+									</div>
+								</td>
+								<td style="text-align:center;">{{client.premiumCap}}%</td>
+								<td>
+									<div ng-repeat="csm in client.premiumCSMs">
+
+										<i class="user icon"></i>
+										{{csm.name}}
+										&nbsp
+										({{getMonthYearDateFromDate(csm.start)}}  -  {{getMonthYearDateFromDate(csm.end)}})
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

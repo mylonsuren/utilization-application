@@ -1,0 +1,52 @@
+
+<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+<script type="text/javascript" src="/libraries/dates.js"></script>
+<script type="text/javascript" src="/libraries/query.js"></script>
+
+<div class="ui long modal TrialClientsReport">
+	<div class="header">Trial Clients Report<div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+	<div class="content">
+		<p>An overview of all clients currently on a trial account.</p>
+
+		<div class="ui {{isLoading ? 'active' : ''}} inverted dimmer">
+			<div class="ui text loader">Fetching Data ...</div>
+		</div>
+		
+		<div id="geoPieChart" style="text-align:center;" ng-show="trialAccounts.length > 0"></div>
+
+		<table class="ui very compact small selectable celled table" ng-show="trialAccounts.length > 0">
+			<thead>
+				<tr>
+					<th>Client</th>
+					<th style="text-align:center;">Number of Contracts</th>
+					<th>Associated CSM's</th>
+					<th style="text-align:center;">Amount Purchased</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="client in trialAccountClients" ng-click="redirect(client.accountID)">
+					<td>
+						<h4 class="ui image header">
+							<div class="content">
+								{{client.clientName}}
+								<div class="sub header">{{client.clientRegion}}</div>
+							</div>
+						</h4>
+					</td>
+					<td style="text-align:center;">{{client.numberOfContracts}}</td>
+					<td>{{client.associatedCSMS}}</td>
+					<td style="text-align:center;">{{client.totalPurchased}}%</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h2 class="ui center aligned icon header" ng-show="trialAccounts.length <= 0">
+			<i class="building outline icon"></i>
+			No Trial Clients
+		</h2>
+
+	</div>
+	<div class="actions">
+		<button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+	</div>
+</div>

@@ -1,0 +1,40 @@
+<div class="ui long modal CSMAssignmentBreakdownReport" ng-click="createBarGraph()">
+	<div class="header">CSM Assignment Breakdown Report<div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+	<div class="content">
+		<p>All of the CSMs' current assignments broken down by their clients as of {{getMonthandYear()}}</p>
+		<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+			<div class="ui text loader">
+				Gathering Data...
+			</div>
+		</div>
+		<div class="ui tiny header" > Top 5 CSM's
+			<div class="ui tiny sub header"> By Utilization </div>
+		</div>
+		<table class="ui very compact small selectable celled table">
+			<thead>
+				<tr>
+					<th>CSM</th>
+					<th style="text-align:center">Utilization</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="csm in topCSMS | orderBy: '-util' | limitTo: 5" ng-click="relocate(csm)">
+					<td class="{{csm.util > 100 ? 'negative' : ''}}">
+						<h4 class="ui image header">
+							<div class="content">
+								{{csm.name}}
+								<div class="sub header">{{csm.region}}</div>
+							</div>
+						</h4>
+					</td>
+					<td style="text-align:center;" class="{{csm.util > 100 ? 'negative' : ''}}">
+						{{round(csm.util, 2)}}%
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="actions">
+		<button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+	</div>
+</div>

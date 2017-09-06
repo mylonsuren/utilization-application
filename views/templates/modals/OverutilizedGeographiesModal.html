@@ -1,0 +1,42 @@
+<!-- modal to show reports -->
+<div class="ui long modal OverutilizedGeographiesReport">
+	<div class="header">Overutilized Geographies Report <div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+	<div class="content">
+		<p>A list of all geographies currently overutilized around the world</p>
+
+		<div class="ui {{isLoading ? 'active' : ''}} inverted dimmer">
+			<div class="ui text loader">Fetching Data...</div>
+		</div>
+
+		<div id="overutilizedGeosChart" ng-show="overutilizedGeos.length > 0"></div>
+		
+		<table class="ui very compact celled selectable table" ng-show="overutilizedGeos.length > 0">
+			<thead>
+				<tr>
+					<th>Geo</th>
+					<th style="text-align: center;">Utilization</th>
+					<th style="text-align: center;">Assigned</th>
+					<th style="text-align: center;">Capacity</th>
+					<th style="text-align: center;">Contracts</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="geo in overutilizedGeos" ng-click="relocate(geo)">
+					<td>{{geo.name}}</td>
+					<td style="text-align: center;">{{geo.util}}%</td>
+					<td style="text-align: center;">{{geo.assigned}}%</td>
+					<td style="text-align: center;">{{geo.cap}}%</td>
+					<td style="text-align: center;">{{geo.contracts.length}}</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h2 class="ui center aligned icon header" ng-show="overutilizedGeos.length <= 0">
+			<i class="world icon"></i>
+			No Overutilized Geos
+		</h2>
+	</div>
+	<div class="actions">
+		<button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+	</div>
+</div>

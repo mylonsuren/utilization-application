@@ -1,0 +1,44 @@
+
+<!-- modal to show reports -->
+<div class="ui long modal MissingInfoOnETAReport">
+	<div class="header">Missing Info On ETA Report<div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+	<div class="content">
+		<p>View a summary of missing, incomplete, or invalid ETA information
+			<button style="display: inline-block; margin-bottom: 10px;" class="ui right floated button" ng-click="viewPDFMissingInfo()" ng-show="results.length > 0">View All ({{results.length}})</button>
+		</p>
+		<div class="ui {{isLoading ? 'active':''}} inverted dimmer">
+			<div class="ui text loader">Loading</div>
+		</div>
+		<div class="center aligned">
+			<h2 class="ui huge icon header center aligned" style="margin-top: 75px;" ng-show="results.length <= 0">
+				<i class="building outline icon"></i>
+				No Missing Information
+			</h2>
+
+			<p style="text-align: center;" ng-show="results.length <= 0">
+				There is currently no missing information.
+			</p>
+		</div>
+		<div class="ui centered two statistics" ng-show="results.length > 0">
+			<div class="statistic">
+				<div class="value">
+					{{results.length}}
+				</div>
+				<div class="label">
+					Affected Contracts
+				</div>
+			</div>
+			<div class="statistic">
+				<div class="value">
+					{{affectedClients.length}}
+				</div>
+				<div class="label">
+					Affected Clients
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="actions">
+		<button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+	</div>
+</div>

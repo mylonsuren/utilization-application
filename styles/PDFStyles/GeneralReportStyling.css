@@ -1,0 +1,12 @@
+table.ui.table {
+	border-radius: 0px;
+}
+
+table.selectable>thead>tr, table.selectable>tbody>tr {
+	cursor: pointer;
+}
+
+
+html, body {
+	background-color: #ececec;
+}

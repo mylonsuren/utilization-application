@@ -1,0 +1,78 @@
+
+<!-- modal to show reports -->
+
+<style>
+	#clientNameinTable:hover{
+		color: #2C3E50;
+		font-weight: bold;
+	}
+
+</style>
+
+<div class="ui long modal AvailableCSMsReport">
+	<div class="header">Available CSMs Report<div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+	<div class="content">
+		<p>View a summary of all CSMs that have the capacity to take on another client.</p>
+		<div class="ui {{isLoading ? 'active' : ''}} inverted dimmer">
+			<div class="ui text loader">Fetching Data...</div>
+		</div>
+		<div class="ui {{isStillLoading ? 'active' : ''}} inverted dimmer">
+			<div class="ui text loader">Gathering Information...</div>
+		</div>
+		<div class="ui two tiny statistics">
+			<div class="statistic">
+				<div class="value">
+					{{underutilizedCSMS.length}}
+				</div>
+				<div class="label">
+					Underutilized CSM's
+				</div>
+			</div>
+
+			<div class="statistic">
+				<div class="value">
+					{{avgAvailable}}
+				</div>
+				<div class="label">
+					Contracts Available
+				</div>
+			</div>
+		</div>
+
+		<div class="ui tiny header" > Top 5 CSM's
+			<div class="ui tiny sub header"> By Availability </div>
+		</div>
+		<table class="ui very compact small celled selectable table">
+			<thead>
+				<tr>
+					<th style="text-align:center;">CSM</th>
+					<th style="text-align:center;">Utilization</th>
+					<th style="text-align:center;">Assigned</th>
+					<th style="text-align:center;">Work Effort</th>
+					<th style="text-align:center;">Capacity</th>
+					<th style="text-align:center;">Available</th>
+					<th style="text-align:center;">Clients</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="csm in underutilizedCSMS | orderBy: 'utilization' | limitTo: 5">
+					<td ng-click="relocate(csm)">{{csm.csmName}}</td>
+					<td style="text-align:center;">{{round(csm.utilization, 2)}}%</td>
+					<td style="text-align:center;">{{csm.assigned}}%</td>
+					<td style="text-align:center;">{{csm.workEffort}}%</td>
+					<td style="text-align:center;">{{csm.csmCapacity}}%</td>
+					<td style="text-align:center;">{{csm.csmCapacity - csm.assigned}}%</td>
+					<td>
+						<div id="clientNameinTable" ng-repeat="client in csm.activeClients" ng-click="redirect(client.accountID)">
+							<i class="building outline icon"></i> {{client.clientName}} - {{client.clientCapacity}}%
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="actions">
+
+		<button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+	</div>
+</div>

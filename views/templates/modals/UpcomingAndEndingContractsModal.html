@@ -1,0 +1,84 @@
+<!-- modal to show reports -->
+
+
+
+<div class="ui long modal UpcomingAndEndingContractsReport">
+	<div class="header">Upcoming and Ending Contracts Report<div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+	<div class="content">
+		<p>An overview of upcoming and ending contracts within 6 months.</p>
+
+		<div class="ui {{creatingEvent ? 'active':''}} inverted dimmer">
+			<div class="ui text loader">Loading...</div>
+		</div>
+
+		<br />
+
+		<div class="ui two column grid">
+			<div class="ui divided row">
+				<div class="ui column">
+					<div class="ui centered sub header">
+						Contracts Ending Within 6 Months
+						<br />
+					</div>
+					<div class="ui one large statistics">
+						<div class="statistic">
+							<div class="value">
+								{{endingMonth.length}}
+							</div>
+							<div class="label">
+								Contracts Ending
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="ui column">
+					<div class="ui centered sub header">
+						Contracts Starting Within 6 Months
+						<br />
+					</div>
+					<div class="ui one large statistics">
+						<div class="statistic">
+							<div class="value">
+								{{startingMonth.length}}
+							</div>
+							<div class="label">
+								Contracts Starting
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="ui divided row">
+				<div class="ui divided column">
+
+					<div class="ui one large statistics">
+						<div class="statistic">
+							<div class="value">
+								{{endingMonthAffectedCSMS.length}}
+							</div>
+							<div class="label">
+								CSMs With Contracts Ending
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="ui divided column">
+					<div class="ui one large statistics">
+						<div class="statistic">
+							<div class="value">
+								{{startingMonthAffectedCSMS.length}}
+							</div>
+							<div class="label">
+								CSMs With Contracts Starting
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div class="actions">
+		<button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+	</div>
+</div>

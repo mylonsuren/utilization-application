@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Unassigned Clients Report</title>
+
+    <!-- External Styling -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+    <!-- Internal Styling -->
+    <link rel="stylesheet" type="text/css" href="/PDFStyles/GeneralReportStyling.css">
+    <link rel="stylesheet" type="text/css" href="/print.css" media="print">
+
+    <!--Dependencies -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+    <script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.5.2/randomColor.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+
+    <!-- source code -->
+    <script type="text/javascript" src="/angularConfig.js"></script>
+    <script type="text/javascript" src="/controllers/navbarController.js"></script>
+
+    <!-- Library -->
+    <script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+    <script type="text/javascript" src="/libraries/dates.js"></script>
+    <script type="text/javascript" src="/libraries/query.js"></script>
+    <script type="text/javascript" src="/libraries/load.js"></script>
+
+    <!-- Controller -->
+    <script type="text/javascript" src="/controllers/PDFControllers/UnassignedClientsPDFController.js"></script>
+
+  </head>
+
+  <!-- Extra Styling for Print View -->
+  <style media="print">
+    #extraNonPrint {
+      display: none;
+    }
+  </style>
+
+
+  <body ng-app="CSMApp" ng-controller="UnassignedClientsPDFController">
+
+    <!-- Loader -->
+    <div class="ui {{isLoading ? 'active' : ''}} dimmer">
+      <div class="ui text loader">Fetching Data ...</div>
+    </div>
+
+    <!-- Print Menu -->
+    <div class="ui vertical mini labeled icon menu" style="position: fixed; top: 100px;">
+      <a class="item" ng-click="print()">
+        <i class="grey print icon"></i>
+        Print
+      </a>
+    </div>
+
+    <!-- Report Page -->
+    <div class="ui one cards">
+      <div class="ui raised card" style="padding: 60px; margin-top: 90px; margin-left: 200px; margin-right: 100px;" ng-show="!isLoading">
+        <div class="ui two column grid">
+          <div class="ui column">
+            <div class="ui large header">
+              Unassigned Clients Report
+              <div class="sub header" id="extraNonPrint">
+                The table below shows accounts currently with a Premium Support Tag, but with no CSM's assigned. Please go to <a ng-click="goToETA()">ETA</a> and login to add a CSM to each account. Once the correct fields have been filled out on ETA, the list below will automatically update.
+              </div>
+              <br />
+              <div class="sub header">
+                You can click on the row in the table and it will automatically redirect you to the page where the fields need to be filled out. On the page, click "Adoption Team Members" -> "CSM Information".
+              </div>
+            </div>
+          </div>
+          <div class="ui column">
+            <div class="ui one statistics">
+              <div class="statistic">
+                <div class="value">
+                  {{results.length}}
+                </div>
+                <div class="label">
+                  Premium Support Accounts with No CSMs
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br />
+        <br />
+        <!-- Client Search dropdown menu -->
+        <div class="ui three column grid" id="extraNonPrint">
+          <div class="column">
+            <select class="ui search selection dropdown" ng-model="searchClients" id="clientsDropdown">
+              <option value="">Clients</option>
+              <option>All Clients</option>
+              <option ng-repeat="client in results">{{client.clientName}}</option>
+            </select>
+          </div>
+        </div>
+        <br />
+        <!-- Table -->
+        <table class="ui very compact selectable small sortable celled table">
+          <thead>
+            <tr>
+              <th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('clientName') ? flipSortOrder(clientTableSortingOrder):'-clientName')" class="center aligned">
+                Client <i ng-show="clientTableSortingOrder.includes('clientName')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+              </th>
+              <th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('dateAdded') ? flipSortOrder(clientTableSortingOrder):'-dateAdded')" class="center aligned">
+                Date Added <i ng-show="clientTableSortingOrder.includes('dateAdded')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="result in results | orderBy : clientTableSortingOrder | filter: {clientName: searchClients == 'All Clients' ? '' : searchClients}" ng-click="redirect(result.id)">
+              <td>
+                {{result.clientName}}
+                <div class="ui sub header">
+                  {{result.clientRegion}}
+                </div>
+              </td>
+              <td style="text-align: center;">
+                {{getMonthYearDateFromDate(result.dateAdded)}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </body>
+</html>

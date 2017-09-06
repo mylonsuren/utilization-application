@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Available CSMs Report</title>
+
+    <!--External Styling -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+    <!-- Internal Styling -->
+    <link rel="stylesheet" type="text/css" href="/PDFStyles/GeneralReportStyling.css">
+    <link rel="stylesheet" type="text/css" href="/print.css" media="print">
+
+    <!--Dependencies -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+    <script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+    
+    
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.5.2/randomColor.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+    <script type="text/javascript" src="/angularConfig.js"></script>
+    <script type="text/javascript" src="/controllers/navbarController.js"></script>
+
+    <!--Library-->
+  	<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+  	<script type="text/javascript" src="/libraries/dates.js"></script>
+  	<script type="text/javascript" src="/libraries/query.js"></script>
+  	<script type="text/javascript" src="/libraries/load.js"></script>
+
+    <!--Controller-->
+    <script type="text/javascript" src="/controllers/PDFControllers/AvailableCSMsPDFController.js"></script>
+  </head>
+
+  <!--Extra Styling-->
+  <style>
+    /*Clients in the CSM Table are bolded when hovered over*/
+    #clientNameinTable:hover{
+      color: #2C3E50;
+      font-weight: bold;
+    }
+  </style>
+
+
+  <body ng-app="CSMApp" ng-controller="AvailableCSMsPDFController">
+    <!--Loader-->
+    <div class="ui {{isLoading ? 'active' : ''}} dimmer">
+      <div class="ui text loader">Creating PDF</div>
+    </div>
+
+    <!--Print Menu-->
+    <div class="ui vertical mini labeled icon menu" style="position: fixed; top: 30px; ">
+    	<a class="item" ng-click="print()">
+    		<i class="grey print icon"></i>
+    		Print
+    	</a>
+    </div>
+
+    <!--Displays if there are no available CSMs-->
+    <div class="ui one cards">
+      <div class="ui raised card" style="padding: 60px; margin-left: 200px; margin-right: 100px; margin-top: 90px; min-height: 500px;" ng-show="underutilizedCSMS.length <= 0">
+        <h2 class="ui huge icon header" style="margin-top: 75px;">
+          <i class="users icon"></i>
+          No Available CSM's
+        </h2>
+        <p style="text-align: center;">
+          There are currently no available CSM's.
+        </p>
+      </div>
+    </div>
+
+    <!--First Page-->
+    <div class="page-break">
+      <div class="ui one cards">
+        <div class="ui raised card" style="padding: 60px; margin-left: 200px; margin-right: 100px; margin-top: 90px;" ng-show="underutilizedCSMS.length > 0">
+          <div class="ui two column grid">
+            <div class="ui six wide column">
+              <h1 class="ui header">
+                Available CSMs Report
+                <div class="sub header">A report of all available CSMs for {{getMonthandYear()}}</div>
+              </h1>
+            </div>
+            <div class="ui ten wide column">
+              <div class="ui two tiny statistics">
+                <div class="statistic">
+                  <div class="value">
+                    {{underutilizedCSMS.length}}
+                  </div>
+                  <div class="label">
+                    Underutilized CSM's
+                  </div>
+                </div>
+                <div class="statistic">
+                  <div class="value">
+                    {{avgAvailable}}
+                  </div>
+                  <div class="label">
+                    Contracts Available
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br />
+          <br />
+          <br />
+          <div class="ui divided grid">
+            <div class="ui sixteen wide column">
+              <div class="ui sub header">CSM Breakdown
+                <div class="ui sub header" style="color: #5499C7">Underutilized
+                  <div class="ui sub header" style="display: inline-block; color: #1E8449">| 100% Utilized |</div>
+                  <div class="ui sub header" style="display: inline-block; color: #CB4335">Overutilized</div>
+                </div>
+              </div>
+              <!--Pie Graph of Overutilized, Underutilized, and Maximum Utilized CSMs-->
+              <div id="csmUtilizationPieGraph"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Second Page-->
+    <div class="page-break">
+      <div class="ui one cards">
+        <div class="ui raised card" style="padding: 60px; margin-left: 200px; margin-right: 100px; margin-top: 20px;" ng-show="underutilizedCSMS.length > 0">
+          <h1 class="ui header">
+            Available CSMs Report
+            <div class="sub header">A report of all available CSMs for {{getMonthandYear()}}</div>
+          </h1>
+          <table class="ui very compact small celled selectable sortable table">
+            <thead>
+              <tr>
+                <th class="center aligned" ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('csmName') ? flipSortOrder(csmTableSortingOrder):'-csmName')">
+                  CSM <i ng-show="csmTableSortingOrder.includes('csmName')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i></th>
+                <th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('utilization') ? flipSortOrder(csmTableSortingOrder):'-utilization')" class="center aligned">
+                  Utilization <i ng-show="csmTableSortingOrder.includes('utilization')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i></th>
+                <th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('assigned') ? flipSortOrder(csmTableSortingOrder):'-assigned')" class="center aligned">
+                  Assigned <i ng-show="csmTableSortingOrder.includes('assigned')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i></th>
+                <th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('workEffort') ? flipSortOrder(csmTableSortingOrder):'-workEffort')" class="center aligned">
+                  Work Effort <i ng-show="csmTableSortingOrder.includes('workEffort')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i></th>
+                <th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('csmCapacity') ? flipSortOrder(csmTableSortingOrder):'-csmCapacity')" class="center aligned">
+                  Capacity <i ng-show="csmTableSortingOrder.includes('csmCapacity')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+                </th>
+                <th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('available') ? flipSortOrder(csmTableSortingOrder):'-available')" class="center aligned">
+                  Available<i ng-show="csmTableSortingOrder.includes('available')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+                </th>
+                <th class="center aligned">Clients</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="csm in underutilizedCSMS | orderBy: csmTableSortingOrder">
+                <td ng-click="relocate(csm)">
+                  <h4 class="ui image header">
+                    <div class="content">
+                      {{csm.csmName}}
+                      <div class="sub header">{{csm.region}}</div>
+                    </div>
+                  </h4>
+                </td>
+                <td style="text-align: center;">{{round(csm.utilization, 2)}}%</td>
+                <td style="text-align: center;">{{csm.assigned}}%</td>
+                <td style="text-align: center;">{{csm.workEffort}}%</td>
+                <td style="text-align: center;">{{csm.csmCapacity}}%</td>
+                <td style="text-align: center; ">
+                  <div class="ui green small header" style="font-weight: bold; ">
+                    {{csm.available}}%
+                  </div>
+                </td>
+                <td>
+                  <div id="clientNameinTable" ng-repeat="client in csm.activeClients" ng-click="redirect(client.accountID)">
+                    <i class="building outline icon"></i> {{client.clientName}} - {{client.totalPurchased}}%
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

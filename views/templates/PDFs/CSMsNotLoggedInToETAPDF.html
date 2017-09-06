@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>CSMs Not Logged In to ETA</title>
+
+      <!-- External Styling -->
+      <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+      <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+      <!-- Internal Styling -->
+      <link rel="stylesheet" type="text/css" href="/PDFStyles/GeneralReportStyling.css">
+      <link rel="stylesheet" type="text/css" href="/print.css" media="print">
+
+
+      <!-- Library -->
+      <script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+      <script type="text/javascript" src="/libraries/dates.js"></script>
+      <script type="text/javascript" src="/libraries/query.js"></script>
+
+      <!-- Dependencies -->
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+      <script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.5.2/randomColor.min.js"></script>
+      <script src="https://code.highcharts.com/highcharts.js"></script>
+      <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+      <script type="text/javascript" src="/angularConfig.js"></script>
+      <script type="text/javascript" src="/navbarController.js"></script>
+
+      <!--Library (Load)-->
+      <script type="text/javascript" src="/libraries/load.js"></script>
+
+      <!--Controller-->
+      <script type="text/javascript" src="/PDFControllers/CSMsNotLoggedInToETAPDFController.js"></script>
+  </head>
+
+    <!-- source code -->
+    <script type="text/javascript" src="/angularConfig.js"></script>
+    <script type="text/javascript" src="/controllers/navbarController.js"></script>
+    <script type="text/javascript" src="/libraries/load.js"></script>
+    <script type="text/javascript" src="/controllers/PDFControllers/CSMsNotLoggedInToETAPDFController.js"></script>
+  <!--Extra Print Styling-->
+  <style media="print">
+    /*Hides Extra Descriptions from Print View*/
+    #extraNonPrint {
+        display: none;
+    }
+  </style>
+
+
+  <body ng-app="CSMApp" ng-controller="CSMsNotLoggedInToETAPDFController">
+    <!-- Loader -->
+    <div class="ui {{isLoading ? 'active' : ''}} dimmer">
+        <div class="ui text loader">Fetching Data ...</div>
+    </div>
+
+    <!-- Print Menu -->
+    <div class="ui vertical mini labeled icon menu" style="position: fixed; top: 100px;">
+        <a class="item" ng-click="print()">
+            <i class="grey print icon"></i>
+            Print
+        </a>
+    </div>
+
+    <!-- Report Page -->
+    <div class="ui one cards">
+      <div class="ui raised card" style="padding: 60px; margin-top: 90px; margin-left: 200px; margin-right: 100px;" ng-show="!isLoading">
+        <div class="ui two column grid">
+          <div class="ui column">
+            <div class="ui large header">
+              CSMs Not Logged In to ETA
+              <div class="sub header" id="extraNonPrint">
+                The table below shows CSMs currently <b>assigned to an adoption record</b>, but has not <b>logged in to ETA</b>. Please get the user to sign in to ETA. Once the user signs into ETA, the list below will automatically update.
+              </div>
+              <br />
+              <div class="sub header">
+                You can click on the row in the table and it will automatically redirect you to the page to see where the CSM has been assigned to a client. On the page, click "Adoption Team Members" -> "CSM Info".
+              </div>
+            </div>
+          </div>
+          <div class="ui column">
+            <div class="ui one statistics">
+              <div class="statistic">
+                <div class="value">
+                  {{csmsNotLoggedIn.length}}
+                </div>
+                <div class="label">
+                  CSM(s) Not Logged In to ETA
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br />
+        <br />
+        <br />
+
+        <!--Table-->
+        <table class="ui very compact selectable small sortable celled table">
+          <thead>
+            <tr>
+              <th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('csm') ? flipSortOrder(clientTableSortingOrder):'-csm')" class="center aligned">
+                CSMs <i ng-show="clientTableSortingOrder.includes('csm')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+              </th>
+              <th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('clientName') ? flipSortOrder(clientTableSortingOrder):'-clientName')" class="center aligned">
+                Clients <i ng-show="clientTableSortingOrder.includes('clientName')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+              </th>
+              <th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('clientStart') ? flipSortOrder(clientTableSortingOrder):'-clientStart')" class="center aligned">
+                Date Added <i ng-show="clientTableSortingOrder.includes('clientStart')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="result in csms | orderBy : clientTableSortingOrder | filter: {clientName: searchClients == 'All Clients' ? '' : searchClients}" ng-click="redirect(result.accountID)">
+              <td>
+                {{result.csm}}
+                <div class="ui sub header">
+                  {{result.clientRegion}}
+                </div>
+              </td>
+              <td>
+                {{result.clientName}}
+              </td>
+              <td style="text-align: center;">
+                {{getMonthYearDateFromDate(result.clientStart)}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

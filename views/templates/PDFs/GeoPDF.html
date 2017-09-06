@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Geo Report</title>
+
+		<!-- External Styling -->
+		<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+		<!-- Internal Styling -->
+		<link rel="stylesheet" type="text/css" href="/PDFStyles/GeneralReportStyling.css">
+		<link rel="stylesheet" type="text/css" href="/print.css" media="print">
+
+		<!--Dependencies -->
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+		<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.5.2/randomColor.min.js"></script>
+		<script type="text/javascript" src="https://semantic-ui.com/javascript/library/tablesort.js"></script>
+		<script type="text/javascript" src="/angularConfig.js"></script>
+		<script type="text/javascript" src="/navbarController.js"></script>
+
+		<!-- Library -->
+		<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+		<script type="text/javascript" src="/libraries/dates.js"></script>
+		<script type="text/javascript" src="/libraries/query.js"></script>
+		<script type="text/javascript" src="/libraries/load.js"></script>
+
+		<!-- source code -->
+		<script type="text/javascript" src="/angularConfig.js"></script>
+		<script type="text/javascript" src="/controllers/navbarController.js"></script>
+		<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+		<script type="text/javascript" src="/libraries/dates.js"></script>
+		<script type="text/javascript" src="/libraries/query.js"></script>
+		<script type="text/javascript" src="/libraries/load.js"></script>
+		<script type="text/javascript" src="/controllers/PDFControllers/GeoPDFController.js"></script>
+
+
+	<body ng-app="CSMApp" ng-controller="GeoPDFController">
+
+		<!-- Print Menu -->
+		<div class="ui vertical mini labeled icon menu" style="position: fixed; top: 30px; ">
+			<a class="item" ng-click="print()">
+				<i class="grey print icon"></i>
+				Print
+			</a>
+		</div>
+
+
+		<!-- View Menu -->
+		<div class="ui vertical mini labeled icon menu" id="showBreakdown" style="position: fixed; top: 320px;">
+			<div class="ui left aligned segment">
+				<p>Show breakdown for</p>
+				<div class="field">
+					<div class="ui checkbox">
+						<input type="checkbox"  checked="checked" ng-click="toggleView(1)">
+						<label>Clients</label>
+					</div>
+				</div>
+				<div class="field">
+					<div class="ui checkbox">
+						<input type="checkbox"  checked="checked" ng-click="toggleView(2)">
+						<label>CSMs</label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- First Page -->
+		<!-- Client Breakdown -->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card {{first() === 1 ? 'first' : ''}}"  id="clientPDF" ng-show="filters[1]" style="margin-top: 90px; margin-left: 200px; margin-right: 100px; padding: 60px;">
+					<!-- Loader -->
+					<div class="ui {{isLoading ? 'active' : ''}} inverted dimmer">
+						<div class="ui text loader">Creating PDF...</div>
+					</div>
+
+					<h1 class="ui header">
+						{{region}} Report
+						<div class="sub header">A summary of key information regarding CSM and client utilization in the {{region}} region for {{getMonthandYear()}}</div>
+					</h1>
+					<br />
+
+					<!-- Statistics -->
+					<div class="ui six statistics" ng-click="toggleUnits()">
+						<div class="{{geoUtil > 100 ? 'red':'green'}} statistic">
+							<div class="value">
+								{{geoUtil}}%
+							</div>
+							<div class="label">
+								Utilization
+							</div>
+						</div>
+						<div class="statistic">
+							<div class="value">
+								{{units ? library.round(geoCapacity/20, 2) : library.round(geoCapacity/80, 2) }} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+							</div>
+							<div class="label">
+								Total Capacity
+							</div>
+						</div>
+						<div class="statistic">
+							<div class="value">
+								{{units ? library.round(geoAssignments/20, 2) : library.round(geoAssignments/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+							</div>
+							<div class="label">
+								Assigned Subscriptions
+							</div>
+						</div>
+						<div class="statistic">
+							<div class="value">
+								{{units ? library.round((geoCapacity - workEffort)/20, 2) : library.round((geoCapacity - workEffort)/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+							</div>
+							<div class="label">
+								Available Capacity
+							</div>
+						</div>
+						<div class="statistic">
+							<div class="value">
+								{{units ? library.round(workEffort/20, 2) : library.round(workEffort/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+							</div>
+							<div class="label">
+								Total Work Effort
+							</div>
+						</div>
+						<div class="statistic">
+							<div class="value">
+								{{overutilizedCSMs.length}}
+							</div>
+							<div class="label">
+								Overutilized CSMs
+							</div>
+						</div>
+					</div>
+					<br />
+
+					<!-- Table -->
+					<h3 class="ui header">
+						<i class="building icon"></i> Breakdown by Client
+					</h3>
+					<br />
+					<table class="ui small sortable celled very compact structured table" >
+						<thead>
+							<tr>
+								<th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('clientName') ? flipSortOrder(clientTableSortingOrder):'-clientName')" class="center aligned">
+									Client <i ng-show="clientTableSortingOrder.includes('clientName')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('csms') ? flipSortOrder(clientTableSortingOrder):'-csms[0].name')" class="center aligned">
+									Associated CSMs <i ng-show="clientTableSortingOrder.includes('csms')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="clientTableSortingOrder = (clientTableSortingOrder.includes('totalPurchased') ? flipSortOrder(clientTableSortingOrder):'-totalPurchased')" class="center aligned">
+									Premium Support Purchased <i ng-show="clientTableSortingOrder.includes('totalPurchased')" class="caret {{clientTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="client in regionClients | orderBy: clientTableSortingOrder">
+								<td>
+									<h4 class="ui header">
+										<div class="content">
+											{{client.clientName}}
+										</div>
+									</h4>
+								</td>
+								<td class="center aligned">
+									<div ng-repeat="csm in client.csmNames" ng-show="{{checkRegion(csm)}}">
+										<i class="ui small user icon"></i>{{csm.name}} <br />
+									</div>
+									<span ng-repeat="csm in client.csmNames" ng-show="{{!checkRegion(csm)}}" data-tooltip="CSM is out-of-region">
+										<i class="ui red small attention icon"></i>{{csm.name}} ({{csm.region}})
+										<br />
+									</span>
+								</td>
+								<td class="center aligned">{{client.totalPurchased}}%</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Second Page -->
+		<!-- CSM Breakdown-->
+		<div class="page-break">
+			<div class="ui one cards">
+				<div class="ui raised card {{first() === 2 ? 'first' : ''}}" id="csmsPDF" ng-show="filters[2]" style="margin-bottom: 90px; margin-left: 200px; margin-right: 100px; padding: 60px;">
+					<!-- Loader -->
+					<div class="ui {{isLoading ? 'active' : ''}} inverted dimmer">
+						<div class="ui text loader">Creating PDF...</div>
+					</div>
+
+					<h1 class="ui header">
+						{{region}} Report
+						<div class="sub header">A summary of key information regarding CSM and client utilization in the {{region}} region for {{getMonthandYear()}}</div>
+					</h1>
+					<br />
+
+					<!-- Statistics -->
+					<div class="ui six statistics" ng-click="toggleUnits()">
+						<div class="{{geoUtil > 100 ? 'red':'green'}} statistic">
+							<div class="value">
+								{{geoUtil}}%
+							</div>
+							<div class="label">
+								Utilization
+							</div>
+						</div>
+						<div class="statistic">
+							<div class="value">
+								{{units ? library.round(geoCapacity/20, 2) : library.round(geoCapacity/80, 2) }} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+							</div>
+							<div class="label">
+								Total Capacity
+							</div>
+						</div>
+						<div class="statistic">
+							<div class="value">
+								{{units ? library.round(geoAssignments/20, 2) : library.round(geoAssignments/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+							</div>
+							<div class="label">
+								Assigned Subscriptions
+							</div>
+						</div>
+						<div class="statistic">
+							<div class="value">
+								{{units ? library.round((geoCapacity - workEffort)/20, 2) : library.round((geoCapacity - workEffort)/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+							</div>
+							<div class="label">
+								Available Capacity
+							</div>
+						</div>
+						<div class="statistic">
+							<div class="value">
+								{{units ? library.round(workEffort/20, 2) : library.round(workEffort/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+							</div>
+							<div class="label">
+								Total Work Effort
+							</div>
+						</div>
+						<div class="statistic">
+							<div class="value">
+								{{overutilizedCSMs.length}}
+							</div>
+							<div class="label">
+								Overutilized CSMs
+							</div>
+						</div>
+					</div>
+					<br />
+
+					<!-- Table -->
+					<h3 class="ui header">
+						<i class="user icon"></i> Breakdown by CSMs
+					</h3>
+					<table class="ui small very compact celled sortable selectable table">
+						<thead>
+							<tr>
+								<th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('csmName') ? flipSortOrder(csmTableSortingOrder):'-csmName')" class="center aligned">
+									CSM <i ng-show="csmTableSortingOrder.includes('csmName')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('utilization') ? flipSortOrder(csmTableSortingOrder):'-utilization')" class="center aligned">
+									Utilization <i ng-show="csmTableSortingOrder.includes('utilization')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('assigned') ? flipSortOrder(csmTableSortingOrder):'-assigned')" class="center aligned">
+									Assigned <i ng-show="csmTableSortingOrder.includes('assigned')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('workEffort') ? flipSortOrder(csmTableSortingOrder):'-workEffort')" class="center aligned">
+									Work Effort <i ng-show="csmTableSortingOrder.includes('workEffort')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="csmTableSortingOrder = (csmTableSortingOrder.includes('csmCapacity') ? flipSortOrder(csmTableSortingOrder):'-csmCapacity')" class="center aligned">
+									Capacity <i ng-show="csmTableSortingOrder.includes('csmCapacity')" class="caret {{csmTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th class="center aligned">Clients</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="csm in regionCSMs | orderBy: csmTableSortingOrder" ng-click="relocate(csm)" ng-class="{negative: {{csm.assigned > csm.csmCapacity || csm.workEffort > csm.csmCapacity}}}">
+								<td>
+									<h4 class="ui header">
+										<div class="content">
+											{{csm.csmName}}
+										</div>
+									</h4>
+								</td>
+								<td class="center aligned">{{round(csm.utilization, 2)}}%
+								</td>
+								<td class="center aligned">{{csm.assigned}}%
+								</td>
+								<td class="center aligned">{{csm.workEffort}}%
+								</td>
+								<td class="center aligned">{{csm.csmCapacity}}%
+								</td>
+								<td>
+									<div ng-repeat="client in csm.activeClients">
+										<i class="building outline icon"></i>{{client.clientName}} - {{client.clientCapacity}}%
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

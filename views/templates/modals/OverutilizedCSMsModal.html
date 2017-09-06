@@ -1,0 +1,66 @@
+<div class="ui long modal OverutilizedCSMsReport">
+	<div class="header">Overutilized CSM Report<div class="circle ibm-fright" ng-click="closeModal()"><i class="close icon ibm-fright"></i></div></div>
+	<div class="content">
+		<p>An overview of overutilized CSM's around the world.</p>
+		<div class="ui {{isLoading ? 'active' : ''}} inverted dimmer">
+			<div class="ui text loader">Fetching Data...</div>
+		</div>
+		<div class="ui form" ng-show="csmsNames.length > 0">
+			<div class="inline fields">
+				<label>View: </label>
+				<div class="field">
+					<div class="ui radio checkbox">
+						<input type="radio" name="frequency" checked="checked" ng-click="toggleView('Graph')">
+						<label>Graph</label>
+					</div>
+				</div>
+				<div class="field">
+					<div class="ui radio checkbox">
+						<input type="radio" name="frequency" ng-click="toggleView('Table')">
+						<label>Table</label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="overutilzedCSMChart" ng-show="view === 'Graph' && overUtilizedCSMS.length > 0"></div>
+
+		<table class="ui five column very compact small celled selectable sortable table" ng-show="view === 'Table' && overUtilizedCSMS.length > 0">
+			<thead>
+				<tr>
+					<th>CSM</th>
+					<th style="text-align: center;">Utilization</th>
+					<th style="text-align: center;">Work Effort</th>
+					<th style="text-align: center;">Assigned</th>
+					<th style="text-align: center;">Capacity</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="csm in overUtilizedCSMS | orderBy: '-utilization'" ng-click="relocate(csm)">
+					<td>
+						<h4 class="ui image header">
+							<div class="content">
+								{{csm.csmName}}
+								<div class="sub header">{{csm.region}}</div>
+							</div>
+						</h4>
+					</td>
+					<td style="text-align: center;">{{round(csm.utilization, 2)}}%</td>
+					<td style="text-align: center;">{{csm.workEffort}}%</td>
+					<td style="text-align: center;">{{csm.assigned}}%</td>
+					<td style="text-align: center;">{{csm.csmCapacity}}%</td>
+				</tr>
+			</tbody>
+		</table>
+
+
+		<h2 class="ui center aligned icon header" ng-show="overUtilizedCSMS.length <= 0">
+			<i class="users icon"></i>
+			No Overutilized CSM's
+		</h2>
+
+	</div>
+	<div class="actions">
+		<button class="ibm-btn-sec ibm-btn-small ibm-btn-red-50" ng-click="closeModal()">Close</button>
+	</div>
+</div>

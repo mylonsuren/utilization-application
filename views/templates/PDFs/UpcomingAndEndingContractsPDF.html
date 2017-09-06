@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Upcoming and Ending Contracts Report</title>
+
+		<!-- External Styling -->
+		<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+
+		<!-- Internal Styling -->
+		<link rel="stylesheet" type="text/css" href="/PDFStyles/ClientUsagePDF.css">
+		<link rel="stylesheet" type="text/css" href="/print.css" media="print">
+
+		<!--Dependencies -->
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> <!--angular-->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script> <!-- Chart.js-->
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script> <!-- angular chart -->
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!-- jQuery -->
+		<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.js"></script>
+
+		<!-- source code -->
+		<script type="text/javascript" src="/angularConfig.js"></script>
+		<script type="text/javascript" src="/controllers/navbarController.js"></script>
+
+		<!-- Library -->
+		<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+		<script type="text/javascript" src="/libraries/dates.js"></script>
+		<script type="text/javascript" src="/libraries/query.js"></script>
+		<script type="text/javascript" src="/libraries/load.js"></script>
+
+		<!-- Controller -->
+		<script type="text/javascript" src="/controllers/PDFControllers/UpcomingAndEndingContractsPDFController.js"></script>
+
+	</head>
+
+	<body ng-app="CSMApp" ng-controller="UpcomingAndEndingContractsPDFController">
+
+		<!-- Print Menu -->
+		<div class="ui vertical mini labeled icon menu" style="position: fixed; top: 100px;">
+			<a class="item" ng-click="print()">
+				<i class="grey print icon"></i>
+				Print
+			</a>
+		</div>
+
+
+		<!-- First Page -->
+		<!-- Contracts Ending -->
+		<div class="page-break">
+			<div class = "ui one cards">
+				<div class="ui raised card" style="padding: 60px; margin-top: 90px; margin-left: 200px; margin-right: 100px;">
+					<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+						<div class="ui text loader">
+							Creating Reports...
+						</div>
+					</div>
+					<div class="ui two column grid">
+						<div class="column">
+							<h1 class="ui header">
+								Contracts that are Ending
+								<div class="sub header">A report of all contracts ending within 6 months</div>
+							</h1>
+						</div>
+						<div class="column">
+							<div class="ui two large statistics" ng-show="endingMonth.length > 0">
+								<div class="statistic">
+									<div class="value">
+										{{endingMonth.length}}
+									</div>
+									<div class="label">
+										Contracts Ending
+									</div>
+								</div>
+								<div class="statistic">
+									<div class="value">
+										{{endingMonthAffectedCSMS.length}}
+									</div>
+									<div class="label">
+										Affected CSMs
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<br />
+
+					<!-- Search Dropdown Menus -->
+					<div class="ui three column grid" ng-show="endingMonth.length > 0">
+						<div class="ui eight wide column">
+							<div class="ui sub header"> Contracts Ending within the next 6 months
+							</div>
+						</div>
+						<div class="ui four wide column">
+							<select class="ui search selection dropdown" ng-model="searchType" id="typeDropdown">
+								<option value="">Contract Types</option>
+								<option>All Contract Types</option>
+								<option ng-repeat="contract in contractTypes">{{contract.toUpperCase()}}</option>
+							</select>
+						</div>
+						<div class="ui four wide column">
+							<select class="ui search selection dropdown" ng-model="searchMonth" id="monthDropdown">
+								<option value="">All Months</option>
+								<option>All Months</option>
+								<option ng-repeat="month in months">{{month}}</option>
+							</select>
+						</div>
+					</div>
+
+					<!-- Table -->
+					<table class="ui small celled selectable sortable five column very compact table" ng-show="endingMonth.length > 0">
+						<thead>
+							<tr>
+								<th ng-click="endingTableSortingOrder = (endingTableSortingOrder.includes('name') ? flipSortOrder(endingTableSortingOrder):'-name')" class="center aligned">
+									Client <i ng-show="endingTableSortingOrder.includes('name')" class="caret {{endingTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="endingTableSortingOrder = (endingTableSortingOrder.includes('csm') ? flipSortOrder(endingTableSortingOrder):'-csm')" class="center aligned">
+									CSM <i ng-show="endingTableSortingOrder.includes('csm')" class="caret {{endingTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="endingTableSortingOrder = (endingTableSortingOrder.includes('type') ? flipSortOrder(endingTableSortingOrder):'-type')" class="center aligned">
+									Type <i ng-show="endingTableSortingOrder.includes('type')" class="caret {{endingTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="endingTableSortingOrder = (endingTableSortingOrder.includes('cap') ? flipSortOrder(endingTableSortingOrder):'-cap')" class="center aligned">
+									Amount Purchased <i ng-show="endingTableSortingOrder.includes('cap')" class="caret {{endingTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+								<th ng-click="endingTableSortingOrder = (endingTableSortingOrder.includes('endDate') ? flipSortOrder(endingTableSortingOrder):'-endDate')" class="center aligned">
+									End Date<i ng-show="endingTableSortingOrder.includes('endDate')" class="caret {{endingTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="clients in endingMonth | orderBy: endingTableSortingOrder | filter: {type: searchType == 'All Contract Types' ? '' : searchType,
+							end: searchMonth == 'All Months' ? '':searchMonth}" ng-click="redirect(clients.id)" ng-class="{active: {{alreadyFinished(clients.endDate)}}}">
+							<td>
+								<h4 class="ui image header">
+									<div class="content">
+										{{clients.name}}
+										<div class="sub header">{{clients.region}}</div>
+									</div>
+								</h4>
+							</td>
+							<td>
+								<div class="header">{{clients.csm}}</div>
+							</td>
+							<td style="text-align:center">
+								{{clients.type.toUpperCase()}}
+							</td>
+							<td style="text-align:center">
+								{{clients.cap}}%
+							</td>
+							<td style="text-align:center">
+								{{clients.end}}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="ui meta" ng-show="endingMonth.length <= 0">
+					No contracts ending within the next six months
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Second Page -->
+	<!-- Contracts Starting -->
+	<div class="page-break">
+		<div class = "ui one cards">
+			<div class="ui raised card" style="padding: 60px; margin-left: 200px; margin-right: 100px; margin-bottom: 90px;">
+				<!-- Loader -->
+				<div class="ui {{creatingEvent ? 'active': ''}} inverted dimmer">
+					<div class="ui text loader">
+						Creating Reports...
+					</div>
+				</div>
+
+				<div class="ui two column grid">
+					<div class="column">
+						<h1 class="ui header">
+							Contracts that are Starting
+							<div class="sub header">A report of all contracts starting within 6 months</div>
+						</h1>
+					</div>
+					<div class="column">
+						<div class="ui two large statistics" ng-show="startingMonth.length > 0">
+							<div class="statistic">
+								<div class="value">
+									{{startingMonth.length}}
+								</div>
+								<div class="label">
+									Contracts Starting
+								</div>
+							</div>
+							<div class="statistic">
+								<div class="value">
+									{{startingMonthAffectedCSMS.length}}
+								</div>
+								<div class="label">
+									Affected CSMs
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br />
+
+				<!-- Search Dropdown Menus -->
+				<div class="ui three column grid"  ng-show="startingMonth.length > 0">
+					<div class="ui eight wide column">
+						<div class="ui sub header"> Contracts Starting within the next 6 months
+						</div>
+					</div>
+					<div class="ui four wide column"  ng-show="startingMonth.length > 0">
+						<select class="ui search selection dropdown" ng-model="searchTypeStart" id="typeStartDropdown">
+							<option value="">Contract Types</option>
+							<option>All Contract Types</option>
+							<option ng-repeat="contract in contractTypes">{{contract.toUpperCase()}}</option>
+						</select>
+					</div>
+					<div class="ui four wide column"  ng-show="startingMonth.length > 0">
+						<select class="ui search selection dropdown" ng-model="searchMonthStart" id="monthStartDropdown">
+							<option value="">All Months</option>
+							<option>All Months</option>
+							<option ng-repeat="month in months">{{month}}</option>
+						</select>
+					</div>
+				</div>
+
+				<!-- Table -->
+				<table class="ui small celled selectable sortable five column very compact table" ng-show="startingMonth.length > 0">
+					<thead>
+						<tr>
+							<th ng-click="startingTableSortingOrder = (startingTableSortingOrder.includes('name') ? flipSortOrder(startingTableSortingOrder):'-name')" class="center aligned">
+								Client <i ng-show="startingTableSortingOrder.includes('name')" class="caret {{startingTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+							</th>
+							<th ng-click="startingTableSortingOrder = (startingTableSortingOrder.includes('csm') ? flipSortOrder(startingTableSortingOrder):'-csm')" class="center aligned">
+								CSM <i ng-show="startingTableSortingOrder.includes('csm')" class="caret {{startingTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+							</th>
+							<th ng-click="startingTableSortingOrder = (startingTableSortingOrder.includes('type') ? flipSortOrder(startingTableSortingOrder):'-type')" class="center aligned">
+								Type <i ng-show="startingTableSortingOrder.includes('type')" class="caret {{startingTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+							</th>
+							<th ng-click="startingTableSortingOrder = (startingTableSortingOrder.includes('cap') ? flipSortOrder(startingTableSortingOrder):'-cap')" class="center aligned">
+								Amount Purchased <i ng-show="startingTableSortingOrder.includes('cap')" class="caret {{startingTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+							</th>
+							<th ng-click="startingTableSortingOrder = (startingTableSortingOrder.includes('startDate') ? flipSortOrder(startingTableSortingOrder):'-startDate')" class="center aligned">
+								Start Date<i ng-show="startingTableSortingOrder.includes('startDate')" class="caret {{startingTableSortingOrder.includes('-') ? 'down':'up'}}  icon"></i>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="clients in startingMonth | orderBy: startingTableSortingOrder | filter: {type: searchTypeStart == 'All Contract Types' ? '' : searchTypeStart,
+						start: searchMonthStart == 'All Months' ? '':searchMonthStart}" ng-click="redirect(clients.id)" ng-class="{active: {{alreadyStarted(clients.startDate)}}}">
+							<td>
+								<h4 class="ui image header">
+									<div class="content">
+										{{clients.name}}
+										<div class="sub header">{{clients.region}}</div>
+									</div>
+								</h4>
+							</td>
+							<td>
+								<div class="header">{{clients.csm}}</div>
+							</td>
+							<td style="text-align:center">
+								{{clients.type.toUpperCase()}}
+							</td>
+							<td style="text-align:center">
+								{{clients.cap}}%
+							</td>
+							<td style="text-align:center">
+								{{clients.start}}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="ui meta" ng-show="startingMonth.length <= 0">
+					No contracts starting within the next six months
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>

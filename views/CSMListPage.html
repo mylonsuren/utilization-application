@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Client Success Managers</title>
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href = "https://1.www.s81c.com/common/v18/css/www.css"/>
+	<script src = "https://1.www.s81c.com/common/stats/ida_stats.js"></script>
+	<script src = "https://1.www.s81c.com/common/v18/js/www.js"></script>
+
+	<!-- External styling -->
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.css" />
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" />
+
+
+	<!-- Source styling -->
+	<link rel="stylesheet" type="text/css" href="/PageStyles/CSMListPage.css">
+	<link rel="stylesheet" type="text/css" href="/navbar.css">
+
+
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular-resource.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.9/semantic.min.js"></script>
+
+	<script type="text/javascript" src="/tc-angular-chartjs/dist/tc-angular-chartjs.min.js"></script> <!-- angular charts -->
+
+
+	<!-- Source files -->
+	<script type="text/javascript" src="/angularConfig.js"></script>
+	<script type="text/javascript" src="/dependencies/tablesort.js"></script>
+	<script type="text/javascript" src="/controllers/navbarController.js"></script>
+	<script type="text/javascript" src="/controllers/pageControllers/CSMListPageController.js"></script>
+
+	<script type="text/javascript" src="/libraries/usefulFunctions.js"></script>
+	<script type="text/javascript" src="/libraries/dates.js"></script>
+	<script type="text/javascript" src="/libraries/query.js"></script>
+	<script type="text/javascript" src="/libraries/load.js"></script>
+
+</head>
+
+<body ng-app="CSMApp" ng-controller="CSMListPageController">
+	<!-- this is a nav bar -->
+
+
+	<!-- this part of the navbar is only for the CSM info page -->
+	<application-navbar></application-navbar>
+
+	<!-- <button class= "ui inverted animated button" onclick="topFunction()" id="myBtn" title="Go to top">Top</button> -->
+
+	<!-- this is a lead space -->
+	<div ng-init= "layout = 'grid'" class = "ibm-background-gray-80 ibm-textcolor-gray-30" id="parent-container">
+
+
+		<!-- lead space -->
+		<div id="ibm-leadspace-head" class="ibm-alternate ibm-fluid ibm-fullwidth bluebackground">
+			<div id="ibm-leadspace-body" class="ibm-padding-top-r2 ibm-padding-bottom-r2 ibm-textcolor-gray-80" ng-cloak>
+				<div class="ibm-columns">
+					<div class="ibm-col-6-4">
+						<h1 class="ibm-h1 ibm-textcolor-white-core" id="ibm-pagetitle-h1">Client Success Managers</h1>
+						<div class="ibm-pull-quote ibm-padding-top-1 ibm-h3">
+							<blockquote><p class = "ibm-textcolor-white-core"><em><span class="ibm-pullquote-open">&#8220;</span> Alone we can do so little, together we can do so much.<span class="ibm-pullquote-close">&#8221;</span></em></p>
+							</blockquote>
+						</div>
+						<br />
+						<p class = "ibm-link">
+							<a class="ibm-btn-pri ibm-btn-gray-80 " ng-click="layout='grid'"><i class="grid layout icon"></i>Grid View</a>
+							<a class="ibm-btn-pri ibm-btn-gray-80 " ng-click="layout='list'"><i class="list layout icon"></i>List View</a>
+						</p>
+						<p class="ibm-ind-link" ng-show="layout=='grid'">
+							<a id = "NorthAmericaButton" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link" ng-init="layout='grid'">North America</a>
+							<a id = "LatinAmericaButton" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link" ng-init="layout='grid'">Latin America</a>
+							<a id = "AsiaPacificButton" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link" ng-init="layout='grid'">Asia-Pacific</a>
+							<a id = "EMEAButton" class="ibm-btn-pri ibm-btn-gray-80 ibm-chevron-down-link" ng-init="layout='grid'">EMEA</a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- This is modular for each CSM,have not yet figured out the box information yet -->
+
+		<div class="ibm-fluid" ng-show="layout == 'grid'" ng-cloak>
+			<!-- Americas section -->
+
+			<div id = "NorthAmerica" align = "center">
+				<div class="ui {{isLoading ? 'active' : ''}} dimmer">
+					<div class="ui text loader">Fetching Data ...</div>
+				</div>
+				<h1 class="ibm-h1"><a href="/Geo/North-America">North America</a></h1>
+				<div class ="centered ui link special doubling cards">
+					<div class = "grey card" ng-repeat= "csm in csmNorthAmerica | orderBy : 'csmName'" ng-cloak>
+						<script>	$('.special.cards .image').dimmer({
+							on: 'hover'
+						});</script>
+						<a class="blurring dimmable image" href="{{fetchUrl(csm)}}">
+							<div class="ui dimmer">
+								<div class="content" ng-show="query.filterClients([csm], clientListFilter).length">
+									<div class="center">
+										<h4 class ="ibm-h4">Clients</h4>
+										<div ng-repeat = "client in query.filterClients([csm], clientListFilter)" class ="ibm-textcolor-blue-30">{{client.clientName}}</div>
+										<!-- <div ng-repeat = "client in csm.clients" class ="ibm-textcolor-blue-30">{{client.clientName}}</div> -->
+									</div>
+								</div>
+								<div class = "content" ng-show="!query.filterClients([csm], clientListFilter).length">
+									<div class = "center">
+									<h2 class="ui center aligned icon white header" style="color: grey;">
+										<i class="white suitcase icon" style="color: grey;"></i>
+											{{csm.csmName}} has no current clients
+									</h2>
+								</div>
+							</div>
+							</div>
+							<img ng-src="{{fetchImage(csm)}}" alt = "{{csm.csmName}}">
+						</a>
+						<a class = "content" href="{{fetchUrl(csm)}}">
+							<div class = "header">{{csm.csmName}}</div>
+							<div class = "meta">
+									<div ng-repeat="role in csm.role">{{role}}</div>
+							</div>
+							<div class = "description">
+								<!-- <p><i class="comment icon"></i> {{csm.languages || "unknown"}}</p> -->
+								<div ng-if="(csm.assigned/csm.csmCapacity)*100>100">
+									<h5 class = "ibm-h5 ibm-textcolor-red-50">Assigned Utilization: {{round((csm.assigned/csm.csmCapacity)*100, 1)}}%</h5>
+								</div>
+								<div ng-if="(csm.assigned/csm.csmCapacity)*100<=100">
+									<h5 class ="ibm-h5 ibm-textcolor-blue-50">Assigned Utilization: {{round((csm.assigned/csm.csmCapacity)*100, 1)}}%</h5>
+								</div>
+
+								<div ng-if="csm.utilization>100">
+									<h5 class = "ibm-h5 ibm-textcolor-red-50">Actual Utilization: {{round(csm.utilization, 1)}}%</h5>
+								</div>
+								<div ng-if="csm.utilization<=100">
+									<h5 class ="ibm-h5 ibm-textcolor-blue-50">Actual Utilization: {{round(csm.utilization, 1)}}%</h5>
+								</div>
+
+								</div>
+							</a>
+						</div>
+						<div ng-show = "!csmNorthAmerica">
+							<div class = "center">
+							<h2 class="ui center aligned icon white header" style="color: grey;">
+								<i class="white user icon" style="color: grey;"></i>
+									There are no CSMs in North America
+							</h2>
+						</div>
+						</div>
+					</div>
+				</div>
+
+
+
+				<div id = "LatinAmerica" align = "center">
+					<div class="ui {{isLoading ? 'active' : ''}} dimmer">
+						<div class="ui text loader">Fetching Data ...</div>
+					</div>
+					<h1 class="ibm-h1"><a href="/Geo/Latin-America">Latin America</a></h1>
+					<div class ="centered ui link special doubling cards">
+						<div class = "grey card" ng-repeat= "csm in csmLatinAmerica | orderBy : 'csmName'" ng-cloak>
+							<script>	$('.special.cards .image').dimmer({
+								on: 'hover'
+							});</script>
+							<a class="blurring dimmable image" href="{{fetchUrl(csm)}}">
+								<div class="ui dimmer">
+									<div class="content" ng-show="query.filterClients([csm], clientListFilter).length">
+										<div class="center">
+											<h4 class ="ibm-h4">Clients</h4>
+											<div ng-repeat = "client in query.filterClients([csm], clientListFilter)" class ="ibm-textcolor-blue-30">{{client.clientName}}</div>
+										</div>
+									</div>
+									<div class = "content" ng-show="!query.filterClients([csm], clientListFilter).length">
+										<div class = "center">
+										<h2 class="ui center aligned icon white header" style="color: grey;">
+											<i class="white suitcase icon" style="color: grey;"></i>
+												{{csm.csmName}} has no current clients
+										</h2>
+									</div>
+								</div>
+								</div>
+							<img ng-src="{{fetchImage(csm)}}" alt = "{{csm.csmName}}">
+						</a>
+						<a class = "content" href="{{fetchUrl(csm)}}">
+							<div class = "header">{{csm.csmName}}</div>
+							<div class = "meta">
+								<div ng-repeat="role in csm.role">{{role}}</div>
+							</div>
+							<div class = "description">
+									<!-- <p><i class="comment icon"></i> {{csm.languages || "unknown"}}</p> -->
+									<div ng-if="(csm.assigned/csm.csmCapacity)*100>100">
+										<h5 class = "ibm-h5 ibm-textcolor-red-50">Assigned Utilization: {{round((csm.assigned/csm.csmCapacity)*100, 1)}}%</h5>
+									</div>
+									<div ng-if="(csm.assigned/csm.csmCapacity)*100<=100">
+										<h5 class ="ibm-h5 ibm-textcolor-blue-50">Assigned Utilization: {{round((csm.assigned/csm.csmCapacity)*100, 1)}}%</h5>
+									</div>
+
+									<div ng-if="csm.utilization>100">
+										<h5 class = "ibm-h5 ibm-textcolor-red-50">Actual Utilization: {{round(csm.utilization, 1)}}%</h5>
+									</div>
+									<div ng-if="csm.utilization<=100">
+										<h5 class ="ibm-h5 ibm-textcolor-blue-50">Actual Utilization: {{round(csm.utilization, 1)}}%</h5>
+									</div>
+
+							</div>
+								</a>
+							</div>
+							<div ng-show = "!csmLatinAmerica.length">
+								<div class = "center">
+								<h2 class="ui center aligned icon white header" style="color: grey;">
+									<i class="white user icon" style="color: grey;"></i>
+										There are no CSMs in Latin America
+								</h2>
+							</div>
+							</div>
+						</div>
+					</div>
+
+
+					<!-- Asia Pacific section -->
+					<div id = "Asia-Pacific" align = "center">
+						<h1 class="ibm-h1"><a href="/Geo/Asia-Pacific">Asia-Pacific</a></h1>
+
+						<div class ="centered ui link special doubling cards">
+							<div class = "grey card" ng-repeat= "csm in csmAsiaPacific | orderBy : 'csmName'" ng-cloak>
+								<script>	$('.special.cards .image').dimmer({
+									on: 'hover'
+								});</script>
+								<a class="blurring dimmable image" href="{{fetchUrl(csm)}}">
+									<div class="ui dimmer">
+										<div class="content" ng-show="query.filterClients([csm], clientListFilter).length">
+											<div class="center">
+												<h4 class ="ibm-h4">Clients</h4>
+												<div ng-repeat = "client in query.filterClients([csm], clientListFilter)" class ="ibm-textcolor-blue-30">{{client.clientName}}</div>
+											</div>
+										</div>
+									<div class = "content" ng-show="!query.filterClients([csm], clientListFilter).length">
+										<div class = "center">
+										<h2 class="ui center aligned icon white header" style="color: grey;">
+											<i class="white suitcase icon" style="color: grey;"></i>
+												{{csm.csmName}} has no current clients
+										</h2>
+									</div>
+								</div>
+								</div>
+									<img ng-src="{{fetchImage(csm)}}" alt = "{{csm.csmName}}">
+								</a>
+								<a class = "content" href="{{fetchUrl(csm)}}">
+									<div class = "header">{{csm.csmName}}</div>
+									<div class = "meta">
+										<div ng-repeat="role in csm.role">{{role}}</div>
+									</div>
+									<div class = "description">
+										<!-- <p><i class="comment icon"></i> {{csm.languages || "unknown"}}</p> -->
+										<div ng-if="(csm.assigned/csm.csmCapacity)*100>100">
+											<h5 class = "ibm-h5 ibm-textcolor-red-50">Assigned Utilization: {{round((csm.assigned/csm.csmCapacity)*100, 1)}}%</h5>
+										</div>
+										<div ng-if="(csm.assigned/csm.csmCapacity)*100<=100">
+											<h5 class ="ibm-h5 ibm-textcolor-blue-50">Assigned Utilization: {{round((csm.assigned/csm.csmCapacity)*100, 1)}}%</h5>
+										</div>
+
+										<div ng-if="csm.utilization>100">
+											<h5 class = "ibm-h5 ibm-textcolor-red-50">Actual Utilization: {{round(csm.utilization, 1)}}%</h5>
+										</div>
+										<div ng-if="csm.utilization<=100">
+											<h5 class ="ibm-h5 ibm-textcolor-blue-50">Actual Utilization: {{round(csm.utilization, 1)}}%</h5>
+										</div>
+
+									</div>
+								</a>
+								<div ng-show = "!csmAsiaPacific.length">
+									<div class = "center">
+									<h2 class="ui center aligned icon white header" style="color: grey;">
+										<i class="white user icon" style="color: grey;"></i>
+											There are no CSMs in Asia Pacific
+									</h2>
+								</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+
+						<!-- EMEA section -->
+						<div id = "EMEA" align = "center">
+							<h1 class="ibm-h1"><a href="/Geo/EMEA">EMEA</a></h1>
+
+							<div class ="centered ui link special doubling cards">
+								<div class = "grey card" ng-repeat= "csm in csmEMEA | orderBy : 'csmName'" ng-cloak>
+									<script>	$('.special.cards .image').dimmer({
+										on: 'hover'
+									});</script>
+									<a class="blurring dimmable image" href="{{fetchUrl(csm)}}">
+										<div class="ui dimmer">
+											<div class="content" ng-show ="query.filterClients([csm], clientListFilter).length">
+												<div class="center">
+													<h4 class ="ibm-h4">Clients</h4>
+													<div ng-repeat = "client in query.filterClients([csm], clientListFilter)" class ="ibm-textcolor-blue-30">{{client.clientName}}</div>
+												</div>
+											</div>
+											<div class = "content" ng-show="!query.filterClients([csm], clientListFilter).length">
+												<div class = "center">
+												<h2 class="ui center aligned icon white header" style="color: grey;">
+													<i class="white suitcase icon" style="color: grey;"></i>
+														{{csm.csmName}} has no current clients
+												</h2>
+											</div>
+										</div>
+										</div>
+										<img ng-src="{{fetchImage(csm)}}" alt = "{{csm.csmName}}">
+									</a>
+									<a class = "content" href="{{fetchUrl(csm)}}">
+										<div class = "header">{{csm.csmName}}</div>
+										<div class = "meta">
+											<div ng-repeat="role in csm.role">{{role}}</div>
+										</div>
+										<div class = "description">
+											<!-- <p><i class="comment icon"></i> {{csm.languages || "unknown"}}</p> -->
+											<div ng-if="(csm.assigned/csm.csmCapacity)*100>100">
+												<h5 class = "ibm-h5 ibm-textcolor-red-50">Assigned Utilization: {{round((csm.assigned/csm.csmCapacity)*100, 1)}}%</h5>
+											</div>
+											<div ng-if="(csm.assigned/csm.csmCapacity)*100<=100">
+												<h5 class ="ibm-h5 ibm-textcolor-blue-50">Assigned Utilization: {{round((csm.assigned/csm.csmCapacity)*100, 1)}}%</h5>
+											</div>
+
+											<div ng-if="csm.utilization>100">
+												<h5 class = "ibm-h5 ibm-textcolor-red-50">Actual Utilization: {{round(csm.utilization, 1)}}%</h5>
+											</div>
+											<div ng-if="csm.utilization<=100">
+												<h5 class ="ibm-h5 ibm-textcolor-blue-50">Actual Utilization: {{round(csm.utilization, 1)}}%</h5>
+											</div>
+
+										</div>
+									</a>
+
+									<div ng-show = "!csmEMEA.length">
+										<div class = "center">
+										<h2 class="ui center aligned icon white header" style="color: grey;">
+											<i class="white user icon" style="color: grey;"></i>
+												There are no CSMs in EMEA
+										</h2>
+									</div>
+									</div>
+								</div>
+							</div>
+					</div>
+				</div>
+
+
+		<!-- modularized table display for CSMs -->
+		<div align ="center" class = "ibm-background-gray-80 ibm-textcolor-gray-30" ng-show="layout == 'list'" ng-cloak>
+			<table class = "ui sortable selectable inverted table" id = "csmTable">
+				<thead>
+					<tr>
+						<th>Name </th>
+						<th>Region</th>
+						<th class = "float">Current Capacity</th>
+						<th class = "float">Current Assignments </th>
+						<th class = "float">Current Percent Utilization</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat = "csm in csms | orderBy: 'csmName'" class='{danger: isDangerClass(csm), warning: isWarningClass(csm), success: isSuccessClass(csm)}' ng-click="relocate(fetchUrl(csm))">
+						<td>{{csm.csmName}}</td>
+						<td>{{csm.region}}</td>
+						<td>{{csm.csmCapacity}}%</td>
+						<td>{{csm.assigned}}%</td>
+						<td>{{round(csm.utilization, 1)}}%</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+
+
+				</body>
+
+				</html>
