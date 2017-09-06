@@ -27,7 +27,7 @@
 			</div>
 			<div class="statistic">
 				<div class="value">
-					{{units ? library.round((geoCapacity - workEffort)/20, 2) : library.round((geoCapacity - workEffort)/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+					{{units ? round((geoCapacity - workEffort)/20, 2) : round((geoCapacity - workEffort)/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
 				</div>
 				<div class="label">
 					Available Capacity
@@ -38,7 +38,7 @@
 		<div class="ui three small statistics" ng-click="toggleUnits()">
 			<div class="statistic">
 				<div class="value">
-					{{units ? library.round(geoCapacity/20, 2) : library.round(geoCapacity/80, 2) }} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+					{{units ? round(geoCapacity/20, 2) : round(geoCapacity/80, 2) }} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
 				</div>
 				<div class="label">
 					Total Capacity
@@ -46,7 +46,7 @@
 			</div>
 			<div class="statistic">
 				<div class="value">
-					{{units ? library.round(geoAssignments/20, 2) : library.round(geoAssignments/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+					{{units ? round(geoAssignments/20, 2) : round(geoAssignments/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
 				</div>
 				<div class="label">
 					Assigned Subscriptions
@@ -54,7 +54,7 @@
 			</div>
 			<div class="statistic">
 				<div class="value">
-					{{units ? library.round(workEffort/20, 2) : library.round(workEffort/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
+					{{units ? round(workEffort/20, 2) : round(workEffort/80, 2)}} <i class="{{units ? 'file text outline' : 'user'}} icon"></i>
 				</div>
 				<div class="label">
 					Total Work Effort
