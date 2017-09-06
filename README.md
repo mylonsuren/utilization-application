@@ -1,13 +1,12 @@
 # Utilization Application
----
 Sourced from IBM (Summer 2017)
-
+---
 
 ## About
 The purpose of this tool is...
 
 ...
-
+---
 
 
 ### Deploying the application locally
@@ -23,6 +22,8 @@ $ npm start
 ```
 
 The application will deploy on http://localhost:8080
+
+---
 
 Technologies Used:
 * Angular JS 1.6.4 - Core Front End Framework
