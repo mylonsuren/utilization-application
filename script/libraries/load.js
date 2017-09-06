@@ -27,28 +27,28 @@ CSMApp.service('load', function($http, $q) {
 						date.setDate(date.getDate() + 30);
 
 						csmList = [{
-							csmName: 'CSM One',
+							csmName: 'Test Account',
 							id: 54321,
 							csmCapacity: 100,
-							region: 'Latin America',
+							region: 'Asia Pacific',
 							status: 'active',
 							otherWork: 20,
 							assigned: 20,
 							utilization: 20,
 							workEffort: 20,
 							clients: [{
-								clientName: 'Chicago',
-								clientRegion: 'Latin America',
+								clientName: 'Mac Eng',
+								clientRegion: 'North America',
 								id: 12345,
 								clientCapacity: 20,
 								percentTimeSpent: 20,
-								clientMarket: 'Brazil',
+								clientMarket: 'Canada',
 								clientStart: new Date(),
 								clientEnd: date,
 								isTrial: 'premsupp',
 								csm: 'CSM One',
 								role: 'CSM',
-								country: 'Brazil',
+								country: 'Canada',
 							}]
 						}];
 						localStorage['csmData'] = JSON.stringify(csmList);
