@@ -1,7 +1,7 @@
 {
-  "name": "csm-utilization-and-planning-tool",
+  "name": "stock-market-simulator",
   "version": "1.0.0",
-  "description": "A tool to organize and visualize CSM utilization",
+  "description": "A tool to manage virtual investments.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.w3ibm.bluemix.net/dexter-rivera/CSM-Utilization-and-Planning-Tool.git"
+    "url": "https://github.com/mylonsuren/stock-market-simulator"
   },
   "author": "",
   "license": "ISC",
