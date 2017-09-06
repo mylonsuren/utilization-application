@@ -88,18 +88,18 @@ CSMApp.controller('reportsController', function($scope, $http, $timeout) {
 			description: "View a bar graph of all CSM's current assignments broken down by their clients",
 			reportClassName: "CSMAssignmentBreakdownReport"
 		},
-		{
-			name: "Unassigned Clients Report",
-			description: "View a summary of all clients with pending CSM assignments",
-			reportClassName: "UnassignedClientsReport",
-			isDisabled: false
-		},
-		{
-			name: "Clients w/o Premium Support Tag Report",
-			description: "View a summary of clients with CSM engagements, but no premium support tag",
-			reportClassName: "ClientsWithoutPremiumSupportTagReport",
-			isDisabled: false
-		},
+		// {
+		// 	name: "Unassigned Clients Report",
+		// 	description: "View a summary of all clients with pending CSM assignments",
+		// 	reportClassName: "UnassignedClientsReport",
+		// 	isDisabled: false
+		// },
+		// {
+		// 	name: "Clients w/o Premium Support Tag Report",
+		// 	description: "View a summary of clients with CSM engagements, but no premium support tag",
+		// 	reportClassName: "ClientsWithoutPremiumSupportTagReport",
+		// 	isDisabled: false
+		// },
 		{
 			name: "Trial Clients Report",
 			description: "View a list of all clients currently on a trial account",
@@ -121,18 +121,18 @@ CSMApp.controller('reportsController', function($scope, $http, $timeout) {
 			description: "View an overview of upcoming and ending contracts.",
 			reportClassName: "UpcomingAndEndingContractsReport"
 		},
-		{
-			name: "Missing Info On ETA Report",
-			description: "View a summary of missing, incomplete, or invalid ETA information",
-			reportClassName: "MissingInfoOnETAReport",
-			isDisabled: false
-		},
-		{
-			name: "CSMs Not Logged In to ETA",
-			description: "View a list of CSMs listed on an adoption record but have not yet signed in to ETA",
-			reportClassName: "CSMsNotLoggedInToETAReport",
-			isDisabled: false
-		}
+		// {
+		// 	name: "Missing Info On ETA Report",
+		// 	description: "View a summary of missing, incomplete, or invalid ETA information",
+		// 	reportClassName: "MissingInfoOnETAReport",
+		// 	isDisabled: false
+		// },
+		// {
+		// 	name: "CSMs Not Logged In to ETA",
+		// 	description: "View a list of CSMs listed on an adoption record but have not yet signed in to ETA",
+		// 	reportClassName: "CSMsNotLoggedInToETAReport",
+		// 	isDisabled: false
+		// }
 	];
 
 	// display modal
