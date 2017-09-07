@@ -31,4 +31,4 @@ To run the application:
 $ npm start
 ```
 
-The application will deploy on http://localhost:8080
+The application will deploy on [localhost:8080](http://localhost:8080)
